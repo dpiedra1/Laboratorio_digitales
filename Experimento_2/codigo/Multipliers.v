@@ -16,6 +16,68 @@ module adder (
 	
 endmodule
 
+module lut4(mulA,mulB,rMul);
+input wire [3:0] mulA;
+input wire [1:0] mulB;
+output wire [7:0] rMul;
+
+assign rMul = (mulB==2'b00) ? 8'b0 : (mulB==2'b01) ? mulA : (mulB==2'b10) ? mulA<<1 : (mulA<<1)+mulA;
+
+endmodule
+
+module lut(mulA,mulB,rMul);
+input wire [15:0] mulA;
+input wire [1:0] mulB;
+output wire [31:0] rMul;
+
+assign rMul = (mulB==2'b00) ? 8'b0 : (mulB==2'b01) ? mulA : (mulB==2'b10) ? mulA<<1 : (mulA<<1)+mulA;
+
+endmodule
+
+module mullut4(mulA,mulB,resultado4);
+input wire [31:0] mulA;
+input wire [31:0] mulB;
+output wire [31:0] resultado4;
+
+wire [7:0] resultLut1;
+wire [7:0] resultLut2;
+
+
+lut4 lsb(mulA[3:0],mulB[1:0],resultLut1);
+lut4 msb(mulA[3:0],mulB[3:2],resultLut2);
+
+assign resultado4=resultLut1+(resultLut2<<2);
+
+endmodule
+
+module mullut16(mulA,mulB,resultado16);
+input wire [31:0] mulA;
+input wire [31:0] mulB;
+output wire [31:0] resultado16;
+
+wire [31:0] resultLut161;
+wire [31:0] resultLut162;
+wire [31:0] resultLut163;
+wire [31:0] resultLut164;
+wire [31:0] resultLut165;
+wire [31:0] resultLut166;
+wire [31:0] resultLut167;
+wire [31:0] resultLut168;
+
+
+lut lut1(mulA[15:0],mulB[1:0],resultLut161);
+lut lut2(mulA[15:0],mulB[3:2],resultLut162);
+lut lut3(mulA[15:0],mulB[5:4],resultLut163);
+lut lut4(mulA[15:0],mulB[7:6],resultLut164);
+lut lut5(mulA[15:0],mulB[9:8],resultLut165);
+lut lut6(mulA[15:0],mulB[11:10],resultLut166);
+lut lut7(mulA[15:0],mulB[13:12],resultLut167);
+lut lut8(mulA[15:0],mulB[15:14],resultLut168);
+
+assign resultado16=(resultLut161+(resultLut162<<2)+(resultLut163<<4)+(resultLut164<<6)+(resultLut165<<8)+(resultLut166<<10)+(resultLut167<<12)+(resultLut168<<14));
+
+endmodule
+
 //Bloque que desplaza hacia la izquierda
 module shiftleft #(parameter SHIFT_PLACES = 1)(
 	input  wire [15:0] source,
@@ -23,16 +85,6 @@ module shiftleft #(parameter SHIFT_PLACES = 1)(
 );
 
 assign result = 0 + (source<<SHIFT_PLACES);
-
-endmodule
-
-//Bloque que desplaza hacia la derecha
-module shiftRight #(parameter SHIFT_PLACES = 16)(
-	input  wire [31:0] source,
-	output wire [31:0] result
-);
-
-assign result = 0 + (SHIFT_PLACES>>source);
 
 endmodule
 

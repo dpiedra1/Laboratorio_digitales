@@ -99,6 +99,8 @@ FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FF_LEDS
 );
 
 
+
+
 assign wImmediateValue = {wSourceAddr1,wSourceAddr0};
 
 wire [7:0]result_4bMult;
@@ -115,13 +117,12 @@ mult16bits_arrayMult mult16bits_arrayMult (
 		.result(result_16bMult)
 		);
 
-wire [31:0] result_shift_right;
-shiftRight shiftRight_inst(
-		.source(wSourceData1),
-		.result(result_shift_right)
-		);
 
+wire [31:0] resultadolut4;
+wire [31:0] resultadolut16;
 
+mullut4 lutde4(wSourceData0,wSourceData1,resultadolut4);
+mullut16 lutde16(wSourceData0,wSourceData1,resultadolut16);
 always @ ( * )
 begin
 	case (wOperation)
@@ -182,6 +183,26 @@ begin
 	
 	//-------------------------------------
 	
+	`IMUL2_4:
+	begin
+	rFFLedEN     <= 1'b0;
+	rBranchTaken <= 1'b0;
+	rWriteEnable <= 1'b1;
+	rResult      <= resultadolut4;
+	end
+	
+	//-------------------------------------
+	
+	`IMUL2_16:
+	begin
+	rFFLedEN     <= 1'b0;
+	rBranchTaken <= 1'b0;
+	rWriteEnable <= 1'b1;
+	rResult      <= resultadolut16;
+	end
+	
+	//-------------------------------------
+	
 	`STO:
 	begin
 		rFFLedEN     <= 1'b0;
@@ -223,7 +244,7 @@ begin
 		rFFLedEN     <= 1'b0;
 		rBranchTaken <= 1'b0;
 		rWriteEnable <= 1'b1;
-		rResult      <= result_shift_right;
+		rResult      <= wSourceData0>>8;
 	end
 	//-------------------------------------
 	default:
