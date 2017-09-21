@@ -16,10 +16,10 @@ reg         rWriteEnable,rBranchTaken, genResult;
 wire [27:0] wInstruction;
 wire [3:0]  wOperation;
 reg signed [31:0]   rResult;
-wire signed [7:0]  wSourceAddr0,wSourceAddr1;
+wire [7:0]  wSourceAddr0,wSourceAddr1;
 wire [7:0] wDestination;
 wire [15:0] wIPInitialValue,wImmediateValue;
-wire [31:0] wSourceData0,wSourceData1;
+wire signed [31:0] wSourceData0,wSourceData1;
 
 
 ROM InstructionRom 
@@ -103,6 +103,7 @@ FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FF_LEDS
 
 assign wImmediateValue = {wSourceAddr1,wSourceAddr0};
 
+//Se instancia el multiplicador de 4 bits tipo array
 wire [7:0]result_4bMult;
 mult4bits_arrayMult mult4bits_arrayMult (
 			.sourceA(wSourceData0[3:0]),
@@ -110,6 +111,7 @@ mult4bits_arrayMult mult4bits_arrayMult (
 			.result(result_4bMult)			
 		);
 
+//Se instancia el multiplicador de 16 bits tipo array
 wire [31:0] result_16bMult;
 mult16bits_arrayMult mult16bits_arrayMult (
 		.sourceA(wSourceData0),
@@ -117,12 +119,15 @@ mult16bits_arrayMult mult16bits_arrayMult (
 		.result(result_16bMult)
 		);
 
-
+//Se instancia el multiplicador de 4 bits tipo LUT
 wire [31:0] resultadolut4;
-wire [31:0] resultadolut16;
-
 mullut4 lutde4(wSourceData0,wSourceData1,resultadolut4);
+
+////Se instancia el multiplicador de 16 bits tipo LUT
+wire [31:0] resultadolut16;
 mullut16 lutde16(wSourceData0,wSourceData1,resultadolut16);
+
+
 always @ ( * )
 begin
 	case (wOperation)
@@ -152,7 +157,7 @@ begin
 	end
 	//-------------------------------------
 
-	`MUL:
+	`MUL: //Mutiplicacion utilizando el operador *
 	begin
 		rFFLedEN     <= 1'b0;
 		rBranchTaken <= 1'b0;
@@ -161,19 +166,17 @@ begin
 	end
 	//-------------------------------------
 
-	`IMUL_4:
+	`IMUL_4: //Multiplicacion 4 bits utilizando array multiplier
 	begin
 		rFFLedEN     <= 1'b0;
 		rBranchTaken <= 1'b0;
 		rWriteEnable <= 1'b1;
 		rResult <= result_4bMult;
 		
-			
-		
 	end
 	//-------------------------------------
 	
-	`IMUL_16:
+	`IMUL_16: //Multiplicacion 16 bits utilizando array multiplier
 	begin
 	rFFLedEN     <= 1'b0;
 	rBranchTaken <= 1'b0;
@@ -183,7 +186,7 @@ begin
 	
 	//-------------------------------------
 	
-	`IMUL2_4:
+	`IMUL2_4: //Multiplicacion 4 bits utilizando LUT
 	begin
 	rFFLedEN     <= 1'b0;
 	rBranchTaken <= 1'b0;
@@ -193,7 +196,7 @@ begin
 	
 	//-------------------------------------
 	
-	`IMUL2_16:
+	`IMUL2_16: //Multiplicacion 16 bits utilizando LUT
 	begin
 	rFFLedEN     <= 1'b0;
 	rBranchTaken <= 1'b0;

@@ -16,7 +16,7 @@ begin
 
 // Prueba actividades 1 2 3 y 4 (Imprime en los LEDs)
 
-	0: oInstruction = { `NOP ,24'd4000    };
+	/*0: oInstruction = { `NOP ,24'd4000    };
 	1: oInstruction = { `STO ,`R7,16'hFFFA };	//Primer multiplicando
 	2: oInstruction = { `STO ,`R6,16'hFAFA };	//Segundo multiplicando
 	3: oInstruction = { `NOP ,24'd4000    };
@@ -40,19 +40,19 @@ begin
 																  //para mostrarlo en los LEDs
 	17: oInstruction = { `JMP ,  8'd5,16'b0   };
 	default:
-		oInstruction = { `LED ,  24'b10101010 };	//NOP
+		oInstruction = { `LED ,  24'b10101010 };	//NOP*/
 	
 	// Prueba para probar en simulacion que la multiplicacion funciona
-	/*0: oInstruction = { `NOP ,24'd4000    };
+	0: oInstruction = { `NOP ,24'd4000    };
 	1: oInstruction = { `STO , `R7,16'hFFFF }; //Primer multiplicador	
-	2: oInstruction = { `STO ,`R3,16'hFFFF  }; //Segundo multiplicador
+	2: oInstruction = { `STO ,`R3,16'hFFFA  }; //Segundo multiplicador
 	3: oInstruction = { `NOP ,24'd4000    };
-	4: oInstruction = { `IMUL_16 ,`R7,`R7,`R3 }; //Cambiar el tipo de multiplicador
+	4: oInstruction = { `IMUL2_4 ,`R7,`R7,`R3 }; //Cambiar el tipo de multiplicador
 																//que se quiere usar
 	5: oInstruction = { `NOP ,24'd4000    };
 		
 	default:
-		oInstruction = { `LED ,  24'b10101010 };*/
+		oInstruction = { `LED ,  24'b10101010 };
 		
 		
 	endcase	

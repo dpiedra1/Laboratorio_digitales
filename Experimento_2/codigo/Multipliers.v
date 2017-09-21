@@ -103,6 +103,7 @@ endmodule
 
 
 //Bloque que multiplica dos numeros de 16 bits
+// usando array multiplier
 module mult16bits_arrayMult(
 	input wire [15:0] sourceA,
 	input wire [15:0] sourceB,

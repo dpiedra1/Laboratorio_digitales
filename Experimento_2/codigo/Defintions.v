@@ -14,7 +14,7 @@
 `define IMUL_4   4'd9  //Multiplica usando arrayMultiplier de 4 bits
 `define IMUL_16  4'd10 //Multiplica usando arrayMultiplier de 16 bits
 `define IMUL2_4  4'd11 //Multiplica usando LUT de 4 bits
-`define IMUL2_16 4'd12
+`define IMUL2_16 4'd12 //Multiplica usando LUT de 16 bits
 `define SHTRIGHT 4'd13
 
 `define R0 8'd0
