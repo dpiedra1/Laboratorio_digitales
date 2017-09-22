@@ -4,7 +4,7 @@
 	
 `default_nettype none	
 `define NOP   4'd0
-`define LED   4'd2
+`define LCD   4'd2
 `define BLE   4'd3
 `define STO   4'd4
 `define ADD   4'd5

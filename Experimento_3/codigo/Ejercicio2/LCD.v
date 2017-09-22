@@ -36,7 +36,10 @@ module LCD_Control(
 	output reg      LCD_RS,
 	output wire     LCD_RW,
 	output reg[3:0] SF_D,
-	output wire     SF_CE0
+	output wire     SF_CE0,
+	output reg		 Idle_ready, //indica cuando esta en el estado idle (listo para enviar)
+	input wire		 send_chter, //cuando se desea enviar el caracter
+	input wire[7:0] chter_to_send	//los 8 bits del caracter que se desea enviar	 
 	
 );
 
@@ -47,7 +50,17 @@ reg [31:0] rTimeCount;
 reg rTimeCountReset;
 reg [1:0] init0counter;
 reg init3counter;
-
+reg enable_input_chter; //Indica cuando borrar el contenido del flip flop
+							  //que almacena los datos de entrada
+wire [7:0] chter_to_send_ff;
+FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) input_chter
+(
+	.Clock(Clock),
+	.Reset(Reset),
+	.Enable(enable_input_chter),
+	.D(chter_to_send),
+	.Q(chter_to_send_ff)
+);
 
 //Logica del proximo estado
 always @ (posedge Clock)
@@ -66,6 +79,7 @@ always @ (posedge Clock)
 			rCurrentState <= rNextState;
 		end
 		
+				
 end
 
 
@@ -83,6 +97,8 @@ begin
 		rTimeCountReset=1;
 		init0counter=0;
 		init3counter=0;
+		Idle_ready=0;
+		enable_input_chter=0;
 	end
 	`ST_INIT_0:
 	begin
@@ -93,7 +109,8 @@ begin
 		LCD_E = LCD_E?1:0;
 		init0counter[0]=init0counter[0]?1:0;
 		init0counter[1]=init0counter[1]?1:0;
-		//init0counter = init0counter;
+		Idle_ready=0;
+		enable_input_chter=0;
 		if(rTimeCount>`TIME_40ns) begin
 			LCD_E=1;
 			if(rTimeCount>(`TIME_40ns+`TIME_230ns)) begin
@@ -126,8 +143,9 @@ begin
 		rTimeCountReset=0;
 		init0counter[0]=init0counter[0]?1:0;
 		init0counter[1]=init0counter[1]?1:0;
-		//init0counter = init0counter;
+		Idle_ready=0;
 		init3counter=0;
+		enable_input_chter=0;
 		if(rTimeCount>`TIME_4_1ms) begin
 			rNextState=`ST_INIT_0;
 			rTimeCountReset=1;
@@ -143,8 +161,9 @@ begin
 		rTimeCountReset=0;
 		init0counter[0]=init0counter[0]?1:0;
 		init0counter[1]=init0counter[1]?1:0;
-		//init0counter = init0counter;
+		Idle_ready=0;
 		init3counter=0;
+		enable_input_chter=0;
 		if(rTimeCount>`TIME_100us) begin
 			rNextState=`ST_INIT_0;
 			rTimeCountReset=1;
@@ -163,6 +182,8 @@ begin
 		rTimeCountReset=0;
 		init0counter=0;
 		init0counter = init0counter;
+		Idle_ready=0;
+		enable_input_chter=0;
 		if (init3counter)
 			init3counter =1;
 		else
@@ -190,8 +211,8 @@ begin
 		rTimeCountReset=0;
 		init0counter=0;
 		LCD_E = LCD_E?1:0;
-		
-		//init0counter = init0counter;
+		Idle_ready=0;
+		enable_input_chter=0;
 		if (init3counter)
 			init3counter =1;
 		else
@@ -217,6 +238,8 @@ begin
 		init0counter=0;
 		init3counter=0;
 		LCD_E = LCD_E?1:0;
+		Idle_ready=0;
+		enable_input_chter=0;
 		if(rTimeCount>`TIME_40ns) begin
 			LCD_E=1;
 			if(rTimeCount>(`TIME_40ns+`TIME_230ns)) begin
@@ -242,6 +265,8 @@ begin
 		init0counter=0;
 		init3counter=0;
 		LCD_E = LCD_E?1:0;
+		Idle_ready=0;
+		enable_input_chter=0;
 		if(rTimeCount>`TIME_40ns) begin
 			LCD_E=1;
 			if(rTimeCount>(`TIME_40ns+`TIME_230ns)) begin
@@ -267,6 +292,8 @@ begin
 		init0counter=0;
 		init3counter=0;
 		LCD_E = LCD_E?1:0;
+		Idle_ready=0;
+		enable_input_chter=0;
 		if(rTimeCount>`TIME_40ns) begin
 			LCD_E=1;
 			if(rTimeCount>(`TIME_40ns+`TIME_230ns)) begin
@@ -292,6 +319,8 @@ begin
 		init0counter=0;
 		init3counter=0;
 		LCD_E = LCD_E?1:0;
+		Idle_ready=0;
+		enable_input_chter=0;
 		if(rTimeCount>`TIME_40ns) begin
 			LCD_E=1;
 			if(rTimeCount>(`TIME_40ns+`TIME_230ns)) begin
@@ -317,6 +346,8 @@ begin
 		init0counter=0;
 		init3counter=0;
 		LCD_E = LCD_E?1:0;
+		Idle_ready=0;
+		enable_input_chter=0;
 		if(rTimeCount>`TIME_40ns) begin
 			LCD_E=1;
 			if(rTimeCount>(`TIME_40ns+`TIME_230ns)) begin
@@ -342,6 +373,8 @@ begin
 		init0counter=0;
 		init3counter=0;
 		LCD_E = LCD_E?1:0;
+		Idle_ready=0;
+		enable_input_chter=0;
 		if(rTimeCount>`TIME_40ns) begin
 			LCD_E=1;
 			if(rTimeCount>(`TIME_40ns+`TIME_230ns)) begin
@@ -367,6 +400,8 @@ begin
 		init0counter=0;
 		init3counter=0;
 		LCD_E = LCD_E?1:0;
+		Idle_ready=0;
+		enable_input_chter=0;
 		if(rTimeCount>`TIME_40ns) begin
 			LCD_E=1;
 			if(rTimeCount>(`TIME_40ns+`TIME_230ns)) begin
@@ -392,6 +427,8 @@ begin
 		init0counter=0;
 		init3counter=0;
 		LCD_E = LCD_E?1:0;
+		Idle_ready=0;
+		enable_input_chter=0;
 		if(rTimeCount>`TIME_40ns) begin
 			LCD_E=1;
 			if(rTimeCount>(`TIME_40ns+`TIME_230ns)) begin
@@ -418,6 +455,8 @@ begin
 		init0counter=0;
 		init3counter=0;
 		LCD_E = LCD_E?1:0;
+		Idle_ready=0;
+		enable_input_chter=0;
 		if(rTimeCount>`TIME_40ns) begin
 			LCD_E=1;
 			if(rTimeCount>(`TIME_40ns+`TIME_230ns)) begin
@@ -445,12 +484,14 @@ begin
 		init0counter=0;
 		init3counter=0;
 		LCD_E = LCD_E?1:0;
+		Idle_ready=0;
+		enable_input_chter=0;
 		if(rTimeCount>`TIME_40ns) begin
 			LCD_E=1;
 			if(rTimeCount>(`TIME_40ns+`TIME_230ns)) begin
 				LCD_E=0;
 				if(rTimeCount>(`TIME_40ns+`TIME_230ns+`TIME_40us)) begin
-					rNextState=`ST_SEND_DATA_A;
+					rNextState=`ST_IDLE;
 					rTimeCountReset=1;
 				end else begin
 					rNextState=`ST_SET_RAM_ADDSS_1;
@@ -467,11 +508,13 @@ begin
 	`ST_SEND_DATA_A:
 	begin
 		LCD_RS=1;
-		SF_D=4'b0100;
+		SF_D= chter_to_send_ff[7:4];
 		rTimeCountReset=0;
 		init0counter=0;
 		init3counter=0;
 		LCD_E = LCD_E?1:0;
+		Idle_ready=0;
+		enable_input_chter=0;
 		if(rTimeCount>`TIME_40ns) begin
 			LCD_E=1;
 			if(rTimeCount>(`TIME_40ns+`TIME_230ns)) begin
@@ -495,11 +538,13 @@ begin
 	`ST_SEND_DATA_B:
 	begin
 		LCD_RS=1;
-		SF_D=4'b1000;
+		SF_D= chter_to_send_ff[3:0];
 		rTimeCountReset=0;
 		init0counter=0;
 		init3counter=0;
 		LCD_E = LCD_E?1:0;
+		Idle_ready=0;
+		enable_input_chter=0;
 		if(rTimeCount>`TIME_40ns) begin
 			LCD_E=1;
 			if(rTimeCount>(`TIME_40ns+`TIME_230ns)) begin
@@ -528,6 +573,17 @@ begin
 		rTimeCountReset=0;
 		init0counter=0;
 		init3counter=0;
+		Idle_ready=1;
+				
+		if (send_chter) begin
+			enable_input_chter=1;
+			rNextState=`ST_SEND_DATA_A;
+		end
+		else begin
+			enable_input_chter =0;
+			rNextState=`ST_IDLE;
+		end
+		
 	end
 	
 	default:
@@ -539,6 +595,8 @@ begin
 		rTimeCountReset=1;
 		init0counter=0;
 		init3counter=0;
+		Idle_ready=0;
+		enable_input_chter =0;
 	end
 	
 	

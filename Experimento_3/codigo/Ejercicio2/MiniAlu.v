@@ -10,7 +10,8 @@ module MiniAlu
  output wire [3:0] SF_D,
  output wire LCD_E,
  output wire LCD_RS,
- output wire LCD_RW
+ output wire LCD_RW,
+ output wire SF_CE0
  
 );
 
@@ -22,11 +23,6 @@ reg [15:0]   rResult;
 wire [7:0]  wSourceAddr0,wSourceAddr1,wDestination;
 wire [15:0] wSourceData0,wSourceData1,wIPInitialValue,wImmediateValue;
 
-
-
-//Wires necesarios para conectar la maquina de estados
-wire oLCD_Enabled, oLCD_RegisterSelect, oLCD_ReadWrite;
-wire [3:0] oLCD_Data;
 
 
 
@@ -96,7 +92,7 @@ FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FFD4
 );
 
 
-reg rFF_SF_D_EN, rFF_LCD_E_EN,rFF_LCD_RS_EN, rFF_LCD_RW_EN;
+/*reg rFF_SF_D_EN, rFF_LCD_E_EN,rFF_LCD_RS_EN, rFF_LCD_RW_EN;
 
 FFD_POSEDGE_SYNCRONOUS_RESET # ( 4 ) FF_SF_D
 (
@@ -133,10 +129,29 @@ FFD_POSEDGE_SYNCRONOUS_RESET # ( 1 ) FF_LCD_RW
 	.D( oLCD_ReadWrite ),
 	.Q( LCD_RW    )
 );
-
+*/
 
 assign wImmediateValue = {wSourceAddr1,wSourceAddr0};
 
+//Se instancia el modulo LCD_Control
+
+reg send_chter;
+reg [7:0] chter_to_send;
+wire Idle_ready;
+
+LCD_Control LCD_Control (
+		.Clock(Clock), 
+		.Reset(Reset), 
+		.LCD_E(LCD_E),
+		.LCD_RS(LCD_RS),
+		.LCD_RW(LCD_RW),
+		.SF_D(SF_D),
+		.SF_CE0(SF_CE0),
+		.send_chter(send_chter),
+		.chter_to_send(chter_to_send),
+		.Idle_ready(Idle_ready)
+		
+	);
 
 
 always @ ( * )
@@ -145,10 +160,8 @@ begin
 	//-------------------------------------
 	`NOP:
 	begin
-		rFF_SF_D_EN     <= 1'b0;
-		rFF_LCD_E_EN    <= 1'b0;
-		rFF_LCD_RS_EN   <= 1'b0;
-		rFF_LCD_RW_EN   <= 1'b0;
+		send_chter <= 1'b0;
+		chter_to_send <= 8'd0;
 		rBranchTaken <= 1'b0;
 		rWriteEnable <= 1'b0;
 		rResult      <= 0;
@@ -156,10 +169,8 @@ begin
 	//-------------------------------------
 	`ADD:
 	begin
-		rFF_SF_D_EN     <= 1'b0;
-		rFF_LCD_E_EN    <= 1'b0;
-		rFF_LCD_RS_EN   <= 1'b0;
-		rFF_LCD_RW_EN   <= 1'b0;
+		send_chter <= 1'b0;
+		chter_to_send <= 8'd0;
 		rBranchTaken <= 1'b0;
 		rWriteEnable <= 1'b1;
 		rResult      <= wSourceData1 + wSourceData0;
@@ -167,10 +178,8 @@ begin
 	//-------------------------------------
 	`STO:
 	begin
-		rFF_SF_D_EN     <= 1'b0;
-		rFF_LCD_E_EN    <= 1'b0;
-		rFF_LCD_RS_EN   <= 1'b0;
-		rFF_LCD_RW_EN   <= 1'b0;
+		send_chter <= 1'b0;
+		chter_to_send <= 8'd0;
 		rWriteEnable <= 1'b1;
 		rBranchTaken <= 1'b0;
 		rResult      <= wImmediateValue;
@@ -178,10 +187,8 @@ begin
 	//-------------------------------------
 	`BLE:
 	begin
-		rFF_SF_D_EN     <= 1'b0;
-		rFF_LCD_E_EN    <= 1'b0;
-		rFF_LCD_RS_EN   <= 1'b0;
-		rFF_LCD_RW_EN   <= 1'b0;
+		send_chter <= 1'b0;
+		chter_to_send <= 8'd0;
 		rWriteEnable <= 1'b0;
 		rResult      <= 0;
 		if (wSourceData1 <= wSourceData0 )
@@ -193,32 +200,35 @@ begin
 	//-------------------------------------	
 	`JMP:
 	begin
-		rFF_SF_D_EN     <= 1'b0;
-		rFF_LCD_E_EN    <= 1'b0;
-		rFF_LCD_RS_EN   <= 1'b0;
-		rFF_LCD_RW_EN   <= 1'b0;
+		send_chter <= 1'b0;
+		chter_to_send <= 8'd0;
 		rWriteEnable <= 1'b0;
 		rResult      <= 0;
 		rBranchTaken <= 1'b1;
 	end
 	//-------------------------------------	
-	`LED:
+	`LCD:
 	begin
-		rFF_SF_D_EN     <= 1'b0;
-		rFF_LCD_E_EN    <= 1'b0;
-		rFF_LCD_RS_EN   <= 1'b0;
-		rFF_LCD_RW_EN   <= 1'b0;
 		rWriteEnable <= 1'b0;
 		rResult      <= 0;
 		rBranchTaken <= 1'b0;
+		if (Idle_ready) begin
+			chter_to_send <= wImmediateValue[7:0];
+			send_chter <= 1'b1;
+			rBranchTaken <= 1'b0;
+		end
+		else begin
+			chter_to_send <= 8'd0;
+			send_chter <= 1'b0;
+			rBranchTaken <= 1'b1;
+		end
+		
 	end
 	//-------------------------------------
 	default:
 	begin
-		rFF_SF_D_EN     <= 1'b0;
-		rFF_LCD_E_EN    <= 1'b0;
-		rFF_LCD_RS_EN   <= 1'b0;
-		rFF_LCD_RW_EN   <= 1'b0;
+		send_chter <= 1'b0;
+		chter_to_send <= 8'd0;
 		rWriteEnable <= 1'b0;
 		rResult      <= 0;
 		rBranchTaken <= 1'b0;
