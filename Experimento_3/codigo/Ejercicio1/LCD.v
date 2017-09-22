@@ -466,7 +466,7 @@ begin
 	
 	`ST_SEND_DATA_A:
 	begin
-		LCD_RS=0;
+		LCD_RS=1;
 		SF_D=4'b0100;
 		rTimeCountReset=0;
 		init0counter=0;
@@ -494,7 +494,7 @@ begin
 	
 	`ST_SEND_DATA_B:
 	begin
-		LCD_RS=0;
+		LCD_RS=1;
 		SF_D=4'b1000;
 		rTimeCountReset=0;
 		init0counter=0;
