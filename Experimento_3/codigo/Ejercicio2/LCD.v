@@ -569,8 +569,7 @@ begin
 		SF_D=4'b0;
 		LCD_E=0;
 		LCD_RS=1;
-		rNextState=`ST_IDLE;
-		rTimeCountReset=0;
+		rTimeCountReset=1;
 		init0counter=0;
 		init3counter=0;
 		Idle_ready=1;
