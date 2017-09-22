@@ -17,11 +17,11 @@
 `define ST_SEND_DATA_A     16
 `define ST_SEND_DATA_B     17
 `define ST_IDLE				18
-`define TIME_40us 100 //valor correcto 2000, como es muy grande se cambio,100
+`define TIME_40us 2000 //valor correcto 2000, como es muy grande se cambio,100
 `define TIME_230ns 12
-`define TIME_100us 200 //valor correcto 5000, como es muy grande se cambio,200
-`define TIME_4_1ms 300 //valor correcto 205000, como es muy grande se cambio,300
-`define TIME_1_64ms 400 //valor correcto 82000, como es muy grande se cambio,400
+`define TIME_100us 5000 //valor correcto 5000, como es muy grande se cambio,200
+`define TIME_4_1ms 205000 //valor correcto 205000, como es muy grande se cambio,300
+`define TIME_1_64ms 82000 //valor correcto 82000, como es muy grande se cambio,400
 `define TIME_40ns 2
 `define TIME_1us 50
 
@@ -397,7 +397,7 @@ begin
 			if(rTimeCount>(`TIME_40ns+`TIME_230ns)) begin
 				LCD_E=0;
 				if(rTimeCount>(`TIME_40ns+`TIME_230ns+`TIME_1_64ms)) begin
-					rNextState=`ST_IDLE;//Cambiar por ST_SET_RAM_ADDSS_0
+					rNextState=`ST_SET_RAM_ADDSS_0;//Cambiar por ST_SET_RAM_ADDSS_0
 					rTimeCountReset=1;
 				end else begin
 					rNextState=`ST_DC_3B;
