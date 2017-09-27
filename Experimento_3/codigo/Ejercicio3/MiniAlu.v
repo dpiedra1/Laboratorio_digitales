@@ -16,15 +16,16 @@ module MiniAlu
 );
 
 wire [15:0]  wIP,wIP_temp;
-reg         rWriteEnable,rBranchTaken;
+reg  rWriteEnable,rBranchTaken,rBanderaSubrutina;
 wire [27:0] wInstruction;
 wire [3:0]  wOperation;
 reg [15:0]   rResult;
 wire [7:0]  wSourceAddr0,wSourceAddr1,wDestination;
-wire [15:0] wSourceData0,wSourceData1,wIPInitialValue,wImmediateValue;
+wire [15:0] wSourceData0,wSourceData1,wIPInitialValue,wImmediateValue,wSubrutReturn,wDirActual;
+wire wSubrutEnable;
 
 
-
+assign wSubrutReturn=wDirActual+1;
 
 ROM InstructionRom 
 (
@@ -53,7 +54,8 @@ UPCOUNTER_POSEDGE IP
 .Enable(  1'b1                 ),
 .Q(       wIP_temp             )
 );
-assign wIP = (rBranchTaken) ? wIPInitialValue : wIP_temp;
+	
+assign wIP = (rBanderaSubrutina)?wSubrutReturn:(rBranchTaken) ? wIPInitialValue : wIP_temp;
 
 FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FFD1 
 (
@@ -89,6 +91,16 @@ FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FFD4
 	.Enable(1'b1),
 	.D(wInstruction[23:16]),
 	.Q(wDestination)
+);
+	
+	
+	FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FFSubrut
+(
+	.Clock(Clock),
+	.Reset(Reset),
+	.Enable(wSubrutEnable),
+	.D(wIP),
+	.Q(wDirActual)
 );
 
 
@@ -126,6 +138,7 @@ begin
 		chter_to_send <= 8'd0;
 		rBranchTaken <= 1'b0;
 		rWriteEnable <= 1'b0;
+		rSubrutEnable <= 1'b0;
 		rResult      <= 0;
 	end
 	//-------------------------------------
@@ -135,6 +148,7 @@ begin
 		chter_to_send <= 8'd0;
 		rBranchTaken <= 1'b0;
 		rWriteEnable <= 1'b1;
+		rSubrutEnable <= 1'b0;
 		rResult      <= wSourceData1 + wSourceData0;
 	end
 	//-------------------------------------
@@ -144,6 +158,7 @@ begin
 		chter_to_send <= 8'd0;
 		rWriteEnable <= 1'b1;
 		rBranchTaken <= 1'b0;
+		rSubrutEnable <= 1'b0;
 		rResult      <= wImmediateValue;
 	end
 	//-------------------------------------
@@ -152,6 +167,7 @@ begin
 		send_chter <= 1'b0;
 		chter_to_send <= 8'd0;
 		rWriteEnable <= 1'b0;
+		rSubrutEnable <= 1'b0;
 		rResult      <= 0;
 		if (wSourceData1 <= wSourceData0 )
 			rBranchTaken <= 1'b1;
@@ -170,6 +186,63 @@ begin
 	end
 	//-------------------------------------	
 	`LCD:
+	begin
+		rWriteEnable <= 1'b0;
+		rResult      <= 0;
+		rBranchTaken <= 1'b0;
+		if (Idle_ready) begin
+			chter_to_send <= wImmediateValue[7:0];
+			send_chter <= 1'b1;
+			rBranchTaken <= 1'b0;
+		end
+		else begin
+			chter_to_send <= 8'd0;
+			send_chter <= 1'b0;
+			rBranchTaken <= 1'b1;
+		end
+		
+	end
+	//-------------------------------------
+	`CALL:
+	begin
+		rWriteEnable <= 1'b0;
+		rSubrutEnable <= 1'b1;
+		rResult      <= 0;
+		rBranchTaken <= 1'b0;
+		rBanderaSubrutina <=1'b1;
+		if (Idle_ready) begin
+			chter_to_send <= wImmediateValue[7:0];
+			send_chter <= 1'b1;
+			rBranchTaken <= 1'b0;
+		end
+		else begin
+			chter_to_send <= 8'd0;
+			send_chter <= 1'b0;
+			rBranchTaken <= 1'b1;
+		end
+		
+	end
+	//-------------------------------------
+	`RET:
+	begin
+		rWriteEnable <= 1'b0;
+		rSubrutEnable <= 1'b0;
+		rResult      <= 0;
+		rBranchTaken <= 1'b0;
+		if (Idle_ready) begin
+			chter_to_send <= wImmediateValue[7:0];
+			send_chter <= 1'b1;
+			rBranchTaken <= 1'b0;
+		end
+		else begin
+			chter_to_send <= 8'd0;
+			send_chter <= 1'b0;
+			rBranchTaken <= 1'b1;
+		end
+		
+	end
+	//-------------------------------------
+	`SUBRUT:
 	begin
 		rWriteEnable <= 1'b0;
 		rResult      <= 0;
