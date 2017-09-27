@@ -92,49 +92,11 @@ FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FFD4
 );
 
 
-/*reg rFF_SF_D_EN, rFF_LCD_E_EN,rFF_LCD_RS_EN, rFF_LCD_RW_EN;
 
-FFD_POSEDGE_SYNCRONOUS_RESET # ( 4 ) FF_SF_D
-(
-	.Clock(Clock),
-	.Reset(Reset),
-	.Enable( rFF_SF_D_EN ),
-	.D( oLCD_Data ),
-	.Q( SF_D    )
-);
-
-FFD_POSEDGE_SYNCRONOUS_RESET # ( 1 ) FF_LCD_E
-(
-	.Clock(Clock),
-	.Reset(Reset),
-	.Enable( rFF_LCD_E_EN ),
-	.D( oLCD_Enabled ),
-	.Q( LCD_E    )
-);
-
-FFD_POSEDGE_SYNCRONOUS_RESET # ( 1 ) FF_LCD_RS
-(
-	.Clock(Clock),
-	.Reset(Reset),
-	.Enable( rFF_LCD_RS_EN ),
-	.D( oLCD_RegisterSelect ),
-	.Q( LCD_RS    )
-);
-
-FFD_POSEDGE_SYNCRONOUS_RESET # ( 1 ) FF_LCD_RW
-(
-	.Clock(Clock),
-	.Reset(Reset),
-	.Enable( rFF_LCD_RW_EN ),
-	.D( oLCD_ReadWrite ),
-	.Q( LCD_RW    )
-);
-*/
 
 assign wImmediateValue = {wSourceAddr1,wSourceAddr0};
 
 //Se instancia el modulo LCD_Control
-
 reg send_chter;
 reg [7:0] chter_to_send;
 wire Idle_ready;
