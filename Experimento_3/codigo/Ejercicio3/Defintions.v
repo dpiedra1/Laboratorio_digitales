@@ -9,6 +9,10 @@
 `define STO   4'd4
 `define ADD   4'd5
 `define JMP   4'd6
+`define CALL  4'd4
+`define RET   4'd5
+`define JSUBRUT   4'd6
+
 
 `define R0 8'd0
 `define R1 8'd1
