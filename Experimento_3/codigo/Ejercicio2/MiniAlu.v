@@ -101,6 +101,7 @@ reg send_chter;
 reg [7:0] chter_to_send;
 wire Idle_ready;
 
+
 LCD_Control LCD_Control (
 		.Clock(Clock), 
 		.Reset(Reset), 
