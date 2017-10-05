@@ -3,6 +3,7 @@
 
 `define SUBRUT 8'd8
 
+
 module ROM
 (
 	input  wire[15:0]  		iAddress,
@@ -19,7 +20,7 @@ begin
 	4: oInstruction = { `STO , `R7,16'b0001 };
 	5: oInstruction = { `JMP ,  8'd5,16'b01001000	 };
 	
-	`SUBRUT: oInstruction = { `STO, `R3,16'h1	 };
+	`SUBRUT: oInstruction = { `LCD, `SUBRUT,16'b01001000	 };//manda un H
 	`SUBRUT+1: oInstruction = { `RET , 8'd4,16'b01001000	 };
 	
 	default:
