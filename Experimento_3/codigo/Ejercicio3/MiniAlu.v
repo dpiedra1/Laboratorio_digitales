@@ -24,6 +24,13 @@ wire [7:0]  wSourceAddr0,wSourceAddr1,wDestination;
 wire [15:0] wSourceData0,wSourceData1,wIPInitialValue,wImmediateValue;
 
 
+//subrutina
+reg [15:0] old_address;
+wire call_RET;
+wire [15:0] wOld_address;
+assign call_RET = (wOperation == `RET) ? 1 :0;
+//************************
+
 
 
 ROM InstructionRom 
@@ -44,7 +51,7 @@ RAM_DUAL_READ_PORT DataRam
 	.oDataOut1(     wSourceData1 )
 );
 
-assign wIPInitialValue = (Reset) ? 8'b0 : wDestination;
+assign wIPInitialValue = (Reset) ? 8'b0 : (call_RET) ? (old_address+1) : wDestination;
 UPCOUNTER_POSEDGE IP
 (
 .Clock(   Clock                ), 
@@ -91,7 +98,14 @@ FFD_POSEDGE_SYNCRONOUS_RESET # ( 8 ) FFD4
 	.Q(wDestination)
 );
 
-
+FFD_POSEDGE_SYNCRONOUS_RESET # ( 16 ) FFD_OLD_ADDRSS
+(
+	.Clock(Clock),
+	.Reset(Reset),
+	.Enable(1'b1),
+	.D(wIP),
+	.Q(wOld_address)
+);
 
 
 assign wImmediateValue = {wSourceAddr1,wSourceAddr0};
@@ -127,6 +141,7 @@ begin
 		rBranchTaken <= 1'b0;
 		rWriteEnable <= 1'b0;
 		rResult      <= 0;
+		old_address  <= old_address;
 	end
 	//-------------------------------------
 	`ADD:
@@ -136,6 +151,7 @@ begin
 		rBranchTaken <= 1'b0;
 		rWriteEnable <= 1'b1;
 		rResult      <= wSourceData1 + wSourceData0;
+		old_address  <= old_address;
 	end
 	//-------------------------------------
 	`STO:
@@ -145,6 +161,7 @@ begin
 		rWriteEnable <= 1'b1;
 		rBranchTaken <= 1'b0;
 		rResult      <= wImmediateValue;
+		old_address  <= old_address;
 	end
 	//-------------------------------------
 	`BLE:
@@ -153,6 +170,7 @@ begin
 		chter_to_send <= 8'd0;
 		rWriteEnable <= 1'b0;
 		rResult      <= 0;
+		old_address  <= old_address;
 		if (wSourceData1 <= wSourceData0 )
 			rBranchTaken <= 1'b1;
 		else
@@ -167,6 +185,7 @@ begin
 		rWriteEnable <= 1'b0;
 		rResult      <= 0;
 		rBranchTaken <= 1'b1;
+		old_address  <= old_address;
 	end
 	//-------------------------------------	
 	`LCD:
@@ -174,6 +193,7 @@ begin
 		rWriteEnable <= 1'b0;
 		rResult      <= 0;
 		rBranchTaken <= 1'b0;
+		old_address  <= old_address;
 		if (Idle_ready) begin
 			chter_to_send <= wImmediateValue[7:0];
 			send_chter <= 1'b1;
@@ -187,6 +207,31 @@ begin
 		
 	end
 	//-------------------------------------
+	`CALL:
+	begin
+		send_chter <= 1'b0;
+		chter_to_send <= 8'd0;
+		rWriteEnable <= 1'b0;
+		rResult      <= 0;
+		rBranchTaken <= 1'b1;
+		old_address  <= wOld_address;
+	
+	
+	end
+	//-------------------------------------
+	`RET:
+	begin
+		send_chter <= 1'b0;
+		chter_to_send <= 8'd0;
+		rWriteEnable <= 1'b0;
+		rResult      <= 0;
+		rBranchTaken <= 1'b1;
+		old_address  <= old_address;
+	
+	end
+	//-------------------------------------
+	
+	
 	default:
 	begin
 		send_chter <= 1'b0;
@@ -194,6 +239,7 @@ begin
 		rWriteEnable <= 1'b0;
 		rResult      <= 0;
 		rBranchTaken <= 1'b0;
+		old_address  <= old_address;
 	end	
 	//-------------------------------------	
 	endcase	
