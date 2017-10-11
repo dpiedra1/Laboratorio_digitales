@@ -26,16 +26,14 @@ ROM InstructionRom
 	.oInstruction( wInstruction )
 );
 
-RAM_DUAL_READ_PORT DataRam
+RAM_SINGLE_READ_PORT # (3,24,640*480) VideoMemory
 (
-	.Clock(         Clock        ),
-	.iWriteEnable(  rWriteEnable ),
-	.iReadAddress0( wInstruction[7:0] ),
-	.iReadAddress1( wInstruction[15:8] ),
-	.iWriteAddress( wDestination ),
-	.iDataIn(       rResult      ),
-	.oDataOut0(     wSourceData0 ),
-	.oDataOut1(     wSourceData1 )
+ 	.Clock( Clock ),
+	.iWriteEnable( rVGAWritEnable ),
+	.iReadAddress( 24'b0 ),
+	.iWriteAddress( {wSourceData1[7:0],wSourceData0} ),
+	.iDataIn( wInstruction[23:21] )
+	.oDataOut( {oVGA_R,oVGA_G,oVGA_B} )
 );
 
 assign wIPInitialValue = (Reset) ? 8'b0 : wDestination;
