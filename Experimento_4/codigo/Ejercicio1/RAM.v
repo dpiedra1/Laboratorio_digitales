@@ -1,22 +1,29 @@
 `timescale 1ns / 1ps
 
-module RAM_SINGLE_READ_PORT # ( parameter DATA_WIDTH= 16, parameter ADDR_WIDTH=8, parameter ROW_SIZE=480, parameter COLUMN_SIZE=640)
+module RAM_DUAL_READ_PORT # ( parameter DATA_WIDTH= 16, parameter ADDR_WIDTH=8, parameter MEM_SIZE=8 )
 (
-	input wire Clock,
-	input wire iWriteEnable,
-	input wire[ROW_SIZE-1:0] iReadRow,	
-	input wire[COL_SIZE-1:0] iReadCol,
-	input wire[ROW_SIZE-1:0] iWriteRow,
-	input wire[COL_SIZE-1:0] iWriteCol,
-	input wire[DATA_WIDTH-1:0] iDataIn,
-	output reg [DATA_WIDTH-1:0] oDataOut
+	input wire						Clock,
+	input wire						iWriteEnable,
+	input wire[ADDR_WIDTH-1:0]	iReadAddress0,
+	input wire[ADDR_WIDTH-1:0]	iReadAddress1,
+	input wire[ADDR_WIDTH-1:0]	iWriteAddress,
+	input wire[DATA_WIDTH-1:0]		 	iDataIn,
+	output reg [DATA_WIDTH-1:0] 		oDataOut0,
+	output reg [DATA_WIDTH-1:0] 		oDataOut1
 );
+
+reg [DATA_WIDTH-1:0] Ram [MEM_SIZE:0];		
+
+always @(posedge Clock) 
+begin 
 	
-reg [DATA_WIDTH-1:0] Ram [0:ROW_SIZE-1][0:COLUMN_SIZE-1];
-always @(posedge Clock) begin
-	if (iWriteEnable) begin
-		Ram[iWriteRow][iWriteCol] <= iDataIn; 
-		oDataOut <= Ram[iReadRow][iReadCol];
-	end
-end
+		if (iWriteEnable) 
+			Ram[iWriteAddress] <= iDataIn; 
+			
+	
+			oDataOut0 <= Ram[iReadAddress0]; 
+			oDataOut1 <= Ram[iReadAddress1]; 
+		
+end 
 endmodule
+
