@@ -32,7 +32,7 @@ RAM_SINGLE_READ_PORT # (3,24,640*480) VideoMemory
 	.iWriteEnable( rVGAWritEnable ),
 	.iReadAddress( 24'b0 ),
 	.iWriteAddress( {wSourceData1[7:0],wSourceData0} ),
-	.iDataIn( wInstruction[23:21] )
+	.iDataIn( wInstruction[23:21] ),
 	.oDataOut( {oVGA_R,oVGA_G,oVGA_B} )
 );
 

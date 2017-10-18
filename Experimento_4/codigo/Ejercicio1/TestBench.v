@@ -29,13 +29,19 @@ module TestBench;
 	reg Reset;
 
 	// Outputs
-	wire [7:0] oLed;
+	wire [9:0]column_count;
+	wire [8:0]row_count;
+	wire VGA_HSYNC;
+	wire VGA_VSYNC;
 
 	// Instantiate the Unit Under Test (UUT)
-	MiniAlu uut (
+	VGA_Control uut (
 		.Clock(Clock), 
 		.Reset(Reset), 
-		.oLed(oLed)
+		.column_count(column_count),
+		.row_count(row_count),
+		.VGA_HSYNC(VGA_HSYNC),
+		.VGA_VSYNC(VGA_VSYNC)
 	);
 	
 	always

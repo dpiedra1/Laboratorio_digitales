@@ -2,21 +2,20 @@
 `define ST_V_PULSE_INIT 	1
 `define ST_V_BP        		2
 `define ST_H_DISP 	   	3
-`define ST_H_DISP    		4
-`define ST_H_TFP     		5
-`define ST_H_PULSE   		6
-`define ST_H_TBP     		7
-`define ST_H_V_TFP   		8
-`define ST_H_PULSE   		9
+`define ST_H_TFP     		4
+`define ST_H_PULSE   		5
+`define ST_H_TBP     		6
+`define ST_V_TFP   			7
+`define ST_V_PULSE   		8
 
 
-`define TIME_64us   1600 
-`define TIME_928us  23200
-`define TIME_25_6us 640 
-`define TIME_640ns  16 
-`define TIME_3_84us 96 
-`define TIME_1_92us 48
-`define TIME_320us  8000
+`define TIME_64us   16  //Valor correcto 1600
+`define TIME_928us  23 //Valor correcto 23200
+`define TIME_25_6us 64   //Valor correcto 640
+`define TIME_640ns  16    //Valor correcto 16
+`define TIME_3_84us 96    //Valor correcto 96
+`define TIME_1_92us 48    //Valor correcto 48
+`define TIME_320us  80  //Valor correcto 8000
 
 
 
@@ -80,7 +79,7 @@ begin
 		VGA_HSYNC = 1;
 		VGA_VSYNC = 0;
 		
-		if (rTimeCount < `TIME_64us) begin
+		if (rTimeCount < `TIME_64us-1) begin
 			rNextState=`ST_V_PULSE_INIT;
 			rTimeCountReset=0;
 		end
@@ -100,7 +99,7 @@ begin
 		VGA_HSYNC = 1;
 		VGA_VSYNC = 1;
 		
-		if (rTimeCount < `TIME_928us) begin
+		if (rTimeCount < `TIME_928us-1) begin
 			rNextState=`ST_V_BP;
 			rTimeCountReset=0;
 		end
@@ -114,12 +113,12 @@ begin
 
 	`ST_H_DISP:
 	begin
-		row_count <= row_count; //POSIBLE LATCH 
+		row_count = row_count; //POSIBLE LATCH 
 		column_count = rTimeCount;
 		VGA_HSYNC = 1;
 		VGA_VSYNC = 1;
 		
-		if (rTimeCount < `TIME_25_6us) begin
+		if (rTimeCount < `TIME_25_6us-1) begin
 			rNextState=`ST_H_DISP;
 			rTimeCountReset=0;
 		end
@@ -134,12 +133,12 @@ begin
 
 	`ST_H_TFP:
 	begin
-		row_count <= row_count; //POSIBLE LATCH 
+		row_count = row_count; //POSIBLE LATCH 
 		column_count = 0;
 		VGA_HSYNC = 1;
 		VGA_VSYNC = 1;
 		
-		if (rTimeCount < `TIME_640ns) begin
+		if (rTimeCount < `TIME_640ns-1) begin
 			rNextState=`ST_H_TFP;
 			rTimeCountReset=0;
 		end
@@ -154,18 +153,20 @@ begin
 
 	`ST_H_PULSE:
 	begin
-		row_count <= row_count + 1; //POSIBLE LATCH 
+		
 		column_count = 0;
 		VGA_HSYNC = 0;
 		VGA_VSYNC = 1;
 		
-		if (rTimeCount < `TIME_3_84us) begin
+		if (rTimeCount < `TIME_3_84us-1) begin
 			rNextState=`ST_H_PULSE;
 			rTimeCountReset=0;
+			row_count = row_count; //POSIBLE LATCH 
 		end
 		else begin
 			rNextState=`ST_H_TBP;
 			rTimeCountReset=1;
+			row_count = row_count + 1; //POSIBLE LATCH 
 		end
 		
 		
@@ -174,18 +175,18 @@ begin
 
 	`ST_H_TBP:
 	begin
-		row_count <= row_count; //POSIBLE LATCH 
+		row_count = row_count; //POSIBLE LATCH 
 		column_count = 0;
 		VGA_HSYNC = 1;
 		VGA_VSYNC = 1;
 		
-		if (rTimeCount < `TIME_1_92us) begin
+		if (rTimeCount < `TIME_1_92us-1) begin
 			rNextState=`ST_H_TBP;
 			rTimeCountReset=0;
 		end
 		else begin
 		rTimeCountReset=1;
-			if(row_count < 10'd640) begin
+			if(row_count < 9'd480) begin
 				rNextState=`ST_H_DISP;
 			end else begin
 				rNextState=`ST_V_TFP;
@@ -197,12 +198,12 @@ begin
 
 	`ST_V_TFP:
 	begin
-		row_count <= row_count; //POSIBLE LATCH 
-		column_count <= column_count; //POSIBLE LATCH
+		row_count = row_count; //POSIBLE LATCH 
+		column_count = column_count; //POSIBLE LATCH
 		VGA_HSYNC = 1;
 		VGA_VSYNC = 1;
 		
-		if (rTimeCount < `TIME_320us) begin
+		if (rTimeCount < `TIME_320us-1) begin
 			rNextState=`ST_V_TFP;
 			rTimeCountReset=0;
 		end
@@ -222,7 +223,7 @@ begin
 		VGA_HSYNC = 1;
 		VGA_VSYNC = 0;
 		
-		if (rTimeCount < `TIME_64us) begin
+		if (rTimeCount < `TIME_64us-1) begin
 			rNextState=`ST_V_PULSE;
 			rTimeCountReset=0;
 		end
