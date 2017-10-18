@@ -17,14 +17,10 @@ module MiniAlu
  
 );
 
-reg Clock_25;
+reg Clock_25<=0;
 
 always @ (posedge Clock) begin
-	if (Reset)
-		Clock_25 = 0;
-	else
 		Clock_25 = !Clock_25;
-
 end
 
 
