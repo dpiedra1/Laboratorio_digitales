@@ -17,7 +17,7 @@ module MiniAlu
  
 );
 
-reg Clock_25<=0;
+reg Clock_25;
 
 always @ (posedge Clock) begin
 		Clock_25 = !Clock_25;

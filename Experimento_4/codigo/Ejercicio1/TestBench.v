@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 // ******** Testbench para el modulo VGA
-/*
+
 module TestBench;
 
 	// Inputs
@@ -47,11 +47,11 @@ module TestBench;
       
 endmodule
 
-*/
+
 
 // ******** Testbench para la miniAlu
 
-module TestBench;
+/*module TestBench;
 
 	// Inputs
 	reg Clock;
@@ -101,7 +101,7 @@ module TestBench;
 endmodule
 
 
-
+*/
 
 
 

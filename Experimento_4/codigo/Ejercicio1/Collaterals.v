@@ -23,6 +23,31 @@ output reg [SIZE-1:0] Q
 
 endmodule
 //----------------------------------------------------
+module UPCOUNTER_POSEDGE_2 # (parameter SIZE=16)
+(
+input wire Reset,
+input wire Clock,
+output reg [SIZE-1:0] Q
+);
+
+
+  always @(posedge Clock or posedge Reset )
+  begin
+      if (Reset) begin
+			Q <=0;
+		end else begin
+			Q <= Q + 1;
+		end
+  end
+
+
+
+endmodule
+
+
+
+
+//----------------------------------------------------
 module FFD_POSEDGE_SYNCRONOUS_RESET # ( parameter SIZE=8 )
 (
 	input wire				Clock,

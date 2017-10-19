@@ -16,7 +16,7 @@
 `define TIME_3_84us 96    //Valor correcto 96
 `define TIME_1_92us 48    //Valor correcto 48
 `define TIME_320us  80  //Valor correcto 8000
-
+`define D_480		  480
 
 
 
@@ -25,7 +25,7 @@ module VGA_Control(
 	input  wire    Clock,
 	input  wire    Reset,
 	output reg     [9:0]column_count,
-	output reg     [8:0]row_count,
+	output wire     [9:0]row_count,
 	output reg     VGA_HSYNC,
 	output reg     VGA_VSYNC
 	
@@ -36,6 +36,16 @@ reg [7:0] rCurrentState,rNextState;
 reg [31:0] rTimeCount;
 reg rTimeCountReset;
 
+
+UPCOUNTER_POSEDGE_2 #(10) row_counter 
+(
+.Clock(   VGA_HSYNC            ), 
+.Reset(   !VGA_VSYNC           ),
+.Q(       row_count            )
+);
+
+wire [9:0] temp_row_count;
+assign temp_row_count = row_count;
 
 //Logica del proximo estado
 always @ (posedge Clock)
@@ -64,7 +74,6 @@ begin
 	
 	`ST_RESET:
 	begin
-		row_count = 0;
 		column_count = 0;
 		rNextState=`ST_V_PULSE_INIT;
 		rTimeCountReset=1;
@@ -74,7 +83,6 @@ begin
 	end
 	`ST_V_PULSE_INIT:
 	begin
-		row_count = 0;
 		column_count =0;
 		VGA_HSYNC = 1;
 		VGA_VSYNC = 0;
@@ -94,7 +102,6 @@ begin
 
 	`ST_V_BP:
 	begin
-		row_count = 0;
 		column_count =0;
 		VGA_HSYNC = 1;
 		VGA_VSYNC = 1;
@@ -113,7 +120,6 @@ begin
 
 	`ST_H_DISP:
 	begin
-		row_count = row_count; //POSIBLE LATCH 
 		column_count = rTimeCount;
 		VGA_HSYNC = 1;
 		VGA_VSYNC = 1;
@@ -133,7 +139,6 @@ begin
 
 	`ST_H_TFP:
 	begin
-		row_count = row_count; //POSIBLE LATCH 
 		column_count = 0;
 		VGA_HSYNC = 1;
 		VGA_VSYNC = 1;
@@ -161,12 +166,12 @@ begin
 		if (rTimeCount < `TIME_3_84us-1) begin
 			rNextState=`ST_H_PULSE;
 			rTimeCountReset=0;
-			row_count = row_count; //POSIBLE LATCH 
+			 
 		end
 		else begin
 			rNextState=`ST_H_TBP;
 			rTimeCountReset=1;
-			row_count = row_count + 1; //POSIBLE LATCH 
+			
 		end
 		
 		
@@ -175,7 +180,6 @@ begin
 
 	`ST_H_TBP:
 	begin
-		row_count = row_count; //POSIBLE LATCH 
 		column_count = 0;
 		VGA_HSYNC = 1;
 		VGA_VSYNC = 1;
@@ -186,10 +190,11 @@ begin
 		end
 		else begin
 		rTimeCountReset=1;
-			if(row_count < 9'd480) begin
+			if(temp_row_count < `D_480-1) begin
 				rNextState=`ST_H_DISP;
 			end else begin
 				rNextState=`ST_V_TFP;
+				//rNextState=`ST_H_DISP;
 			end
 		end
 		
@@ -198,8 +203,7 @@ begin
 
 	`ST_V_TFP:
 	begin
-		row_count = row_count; //POSIBLE LATCH 
-		column_count = column_count; //POSIBLE LATCH
+		column_count = 0; //POSIBLE LATCH ***Cambio aqui
 		VGA_HSYNC = 1;
 		VGA_VSYNC = 1;
 		
@@ -218,7 +222,6 @@ begin
 
 	`ST_V_PULSE:
 	begin
-		row_count = 0;  
 		column_count = 0;
 		VGA_HSYNC = 1;
 		VGA_VSYNC = 0;
@@ -239,7 +242,6 @@ begin
 
 	default:
 	begin
-		row_count = 0;
 		column_count = 0;
 		rNextState=`ST_V_PULSE_INIT;
 		rTimeCountReset=1;
