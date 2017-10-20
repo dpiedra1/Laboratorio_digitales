@@ -23,7 +23,7 @@ output reg [SIZE-1:0] Q
 
 endmodule
 //----------------------------------------------------
-module UPCOUNTER_POSEDGE_2 # (parameter SIZE=16)
+module UPCOUNTER_POSEDGE_ASYRET # (parameter SIZE=16)
 (
 input wire Reset,
 input wire Clock,
@@ -74,5 +74,27 @@ endmodule
 
 
 //----------------------------------------------------------------------
+//----------------------------------------------------
+module DIV_POSEDGE_ASYNCRONOUS_RESET # ( parameter SIZE=8 )
+(
+	input wire				Clock,
+	input wire				Reset,
+	input wire				Enable,
+	output reg [SIZE-1:0]	Q
+);
+	
 
+always @ (posedge Clock or posedge Reset) 
+begin
+	if ( Reset )
+		Q <= 1;
+	else
+	begin	
+		if (Enable) 
+			Q <= !Q; 
+	end	
+ 
+end//always
+
+endmodule
 

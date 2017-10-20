@@ -2,7 +2,7 @@
 
 // ******** Testbench para el modulo VGA
 
-module TestBench;
+/*module TestBench;
 
 	// Inputs
 	reg Clock;
@@ -46,12 +46,12 @@ module TestBench;
 	end
       
 endmodule
-
+*/
 
 
 // ******** Testbench para la miniAlu
 
-/*module TestBench;
+module TestBench;
 
 	// Inputs
 	reg Clock;
@@ -101,7 +101,7 @@ endmodule
 endmodule
 
 
-*/
+
 
 
 

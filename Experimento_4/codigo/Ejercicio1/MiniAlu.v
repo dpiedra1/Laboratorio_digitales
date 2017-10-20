@@ -17,11 +17,15 @@ module MiniAlu
  
 );
 
-reg Clock_25;
+wire Clock_25;
 
-always @ (posedge Clock) begin
-		Clock_25 = !Clock_25;
-end
+DIV_POSEDGE_ASYNCRONOUS_RESET # ( 8 ) FF_CLOCK25 
+(
+	.Clock(Clock),
+	.Reset(Reset),
+	.Enable(1'b1),
+	.Q(Clock_25)
+);
 
 
 wire [15:0]  wIP,wIP_temp;

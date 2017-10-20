@@ -37,7 +37,7 @@ reg [31:0] rTimeCount;
 reg rTimeCountReset;
 
 
-UPCOUNTER_POSEDGE_2 #(10) row_counter 
+UPCOUNTER_POSEDGE_ASYRET #(10) row_counter 
 (
 .Clock(   VGA_HSYNC            ), 
 .Reset(   !VGA_VSYNC           ),
