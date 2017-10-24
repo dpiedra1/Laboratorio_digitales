@@ -77,16 +77,14 @@ VGA_Control VGA_Control(
 
 
 
-RAM_DUAL_READ_PORT DataRam
+RAM_SINGLE_READ_PORT # (3,24,640*480) VideoMemory
 (
-	.Clock(         Clock_25        ),
-	.iWriteEnable(  rWriteEnable ),
-	.iReadAddress0( wInstruction[7:0] ),
-	.iReadAddress1( wInstruction[15:8] ),
-	.iWriteAddress( wDestination ),
-	.iDataIn(       rResult      ),
-	.oDataOut0(     wSourceData0 ),
-	.oDataOut1(     wSourceData1 )
+.Clock( Clock_25 ),
+.iWriteEnable( rVGAWritEnable ),
+.iReadAddress( 24'b0 ),
+.iWriteAddress( {wSourceData1[7:0],wSourceData0} ),
+.iDataIn( wInstruction[23:21] )
+.oDataOut( {VGA_RED,VGA_GREEN,VGA_BLUE} )
 );
 
 assign wIPInitialValue = (Reset) ? 8'b0 : wDestination;
