@@ -26,5 +26,22 @@ always @(negedge ClockT) begin
     DataO<=dataForm;
   end
 end
+endmodule
 
+module Selector(DatoL, );
+  
+  case(DatoL)
+    8'h1D: begin
+      
+    end
+    8'h1C: begin
+      
+    end
+    8'h1B: begin
+      
+    end
+    8'h23: begin
+      
+    end
+  
 endmodule
