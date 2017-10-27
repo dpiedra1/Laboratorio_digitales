@@ -68,7 +68,7 @@ module TestBench;
 	MiniAlu dut
 	(
 		.Clock(Clock),
-		.Reset(Reset),
+		.RST(Reset),
 		.VGA_RED(VGA_RED),
 		.VGA_GREEN(VGA_GREEN),
 		.VGA_BLUE(VGA_BLUE),
