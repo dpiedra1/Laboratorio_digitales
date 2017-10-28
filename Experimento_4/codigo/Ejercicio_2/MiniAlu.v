@@ -64,7 +64,7 @@ module MiniAlu(
 
 	VH_GENERATOR vh_generator(
 		.Clock_25(Clock_25),
-		.reset(Reset),
+		.Reset(Reset),
 		.h_synch(VGA_HSYNC),
 		.v_synch(VGA_VSYNC),
 		.pixel_count(iReadCol),
