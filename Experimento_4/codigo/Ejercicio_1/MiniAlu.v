@@ -20,9 +20,7 @@ module MiniAlu(
     wire [9:0] iReadRow;
 
     
-    wire red;
-    wire green;
-    wire blue;
+    
 
 // Generacion del clock
 
