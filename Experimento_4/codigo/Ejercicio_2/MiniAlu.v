@@ -1,5 +1,6 @@
 `timescale 1ns / 1ps
 `include "VGA_DEFINES.v"
+`include "Teclado.v"
 
 module MiniAlu(
 	input wire Clock,
@@ -8,6 +9,8 @@ module MiniAlu(
 	input wire BTN_NORTH,
 	input wire BTN_SOUTH,
 	input wire BTN_WEST,
+	input wire PS2_DATA,
+	input wire PS2_CLK,
 	output wire VGA_HSYNC,
 	output wire VGA_VSYNC,
 	output wire VGA_RED,
@@ -18,13 +21,15 @@ module MiniAlu(
 	
     reg Clock_25;
     
-    
+    reg [9:0] TecRead:
+
+    wire mIzq,mDer,mAbajo,mArriba;
     
     wire [10:0] iReadCol;
     wire [9:0] iReadRow;
     wire [2:0] RGB_out_template;
-	 wire [2:0] RGB_out_moving_square;
-	 wire 		red_square; 
+    wire [2:0] RGB_out_moving_square;
+    wire red_square; 
 
 
 	//MUX
@@ -48,7 +53,7 @@ module MiniAlu(
 		.RGB_out(RGB_out_template)
 	);
 	 
-	 
+	Teclado tec1(PS2_CLK,PS2_DATA, TecRead, Reset,mIzq,mDer,mArriba,mAbajo);
 	 
 // Se instancia el generador de senales
 
@@ -70,10 +75,14 @@ module MiniAlu(
 moving_square moving_square (
 	.iReadCol(iReadCol),
 	.iReadRow(iReadRow),
-	.button_up(BTN_NORTH),
+	/*.button_up(BTN_NORTH),
 	.button_down(BTN_SOUTH),
 	.button_left(BTN_WEST),
-	.button_right(BTN_EAST),
+	.button_right(BTN_EAST),*/
+	.button_up(mArriba),
+	.button_down(mAbajo),
+	.button_left(mIzq),
+	.button_right(mDer),
 	.RGB_out(RGB_out_moving_square),
 	.show_square(red_square)
 	);
