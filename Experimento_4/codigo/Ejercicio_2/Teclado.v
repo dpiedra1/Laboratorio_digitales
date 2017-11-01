@@ -12,7 +12,7 @@ reg [9:0] dataForm;
 always @(negedge ClockT) begin 
   if(Reset) begin
     bitcount<=0;
-    dataForm<=8'b0;
+    dataForm,DataO<=8'b0;
   end else if (bitcount>0 && bitcount<12) begin
       if(bitcount==1) begin
         dataForm<=DataT;
