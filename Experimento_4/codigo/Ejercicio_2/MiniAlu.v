@@ -21,7 +21,7 @@ module MiniAlu(
 	
     reg Clock_25;
     
-    reg [9:0] TecRead:
+    reg [9:0] TecRead;
 
     wire mIzq,mDer,mAbajo,mArriba;
     
@@ -53,7 +53,7 @@ module MiniAlu(
 		.RGB_out(RGB_out_template)
 	);
 	 
-	Teclado tec1(PS2_CLK,PS2_DATA, TecRead, Reset,mIzq,mDer,mArriba,mAbajo);
+	Teclado tec1(PS2_CLK,PS2_DATA, Reset,mIzq,mDer,mArriba,mAbajo);
 	 
 // Se instancia el generador de senales
 
@@ -73,6 +73,7 @@ module MiniAlu(
 //reg BTN_WEST = 0;
 
 moving_square moving_square (
+	.Reset (Reset),
 	.iReadCol(iReadCol),
 	.iReadRow(iReadRow),
 	/*.button_up(BTN_NORTH),
@@ -93,6 +94,7 @@ endmodule
 
 //Juego
 module moving_square (
+	input wire Reset,
 	input wire [10:0] iReadCol,
    input wire [9:0] iReadRow,
 	input wire button_up,
@@ -110,18 +112,22 @@ module moving_square (
 	assign RGB_out = 3'b100;
 	
 	
-	always @ (posedge button_up or posedge button_down) begin
-		if (button_up)
-			squareY_position = squareY_position -1;
-		else
+	always @ ( posedge button_up or posedge button_down or posedge Reset) begin
+		if (button_down)
 			squareY_position = squareY_position +1;
+		else if (Reset)
+			squareY_position =3'b100;
+		else
+			squareY_position = squareY_position -1;
 	end
 	
-	always @ (posedge button_left or posedge button_right) begin
-		if (button_left)
-			squareX_position = squareX_position -1;
-		else
+	always @ (posedge button_left or posedge button_right or posedge Reset) begin
+		if (button_right)
 			squareX_position = squareX_position +1;
+		else if (Reset)
+			squareX_position =3'b011;
+		else
+			squareX_position = squareX_position -1;
 	end
 	
 

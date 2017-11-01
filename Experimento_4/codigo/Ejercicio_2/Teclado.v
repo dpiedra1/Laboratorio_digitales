@@ -1,51 +1,60 @@
-module Teclado(ClockT, DataT, DataO, Reset,mIzq,mDer,mArriba,mAbajo);
+module Teclado(ClockT, DataT, Reset,mIzq,mDer,mArriba,mAbajo);
 
-input wire Clock25;
+input wire ClockT;
 input wire DataT;
-output reg [9:0] DataO;
 input wire Reset;
 output reg mIzq,mDer,mArriba,mAbajo;
 
-reg [3:0] bitcount;
-reg [9:0] dataForm;
+reg [3:0] bitcount=0;
+reg [10:0] dataForm=8'b0;
 
-always @(negedge ClockT) begin 
+
+always @(negedge ClockT or posedge Reset) begin 
   if(Reset) begin
     bitcount<=0;
-    dataForm,DataO<=8'b0;
-  end else if (bitcount>0 && bitcount<12) begin
-      if(bitcount==1) begin
-        dataForm<=DataT;
-        bitcount<=bitcount+4'b1;
-      end else begin
-        dataForm<={DataT,dataForm};
-        bitcount<=bitcount+4'b1;
-      end
-  end else if (bitcount==0) begin
-    bitcount<=bitcount+4'b1;
-  end else begin
-    bitcount<=0;
-    DataO<=dataForm;
+    dataForm<=0;
+	end
+  else if(bitcount==10) begin
+     bitcount<=0;
+    dataForm<=0;
   end
+  else begin
+	 dataForm[bitcount]<=DataT;
+	 bitcount<=bitcount+1;
+  end
+  
 end
   
 always @(*) begin
-  case(DataO[7:0])
-    8'h1D: begin
-      mArriba=1;
-    end
-    8'h1C: begin
-      mIzq=1;
-    end
-    8'h1B: begin
-      mAbajo=1;
-    end
-    8'h23: begin
-      mDer=1;
-    end
-    default:
-      mDer,mIzq,mArriba,mAbajo=0;
-  end
+	if (bitcount==10) begin
+	  case(dataForm[8:1])
+			8'h1D: begin
+				mArriba=1;
+			end
+			8'h1C: begin
+				mIzq=1;
+			end
+				8'h1B: begin
+				mAbajo=1;
+			end
+				8'h23: begin
+				mDer=1;
+			end
+				8'hF0: begin
+				mDer=0;
+				mIzq=0;
+				mArriba=0;
+				mAbajo=0;
+			end
+			default: begin
+				mDer=0;
+				mIzq=0;
+				mArriba=0;
+				mAbajo=0;
+			end
+		 endcase
+		 end
+	end
 endmodule
 
 
