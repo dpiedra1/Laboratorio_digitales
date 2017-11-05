@@ -29,7 +29,8 @@ module MiniAlu(
     wire [9:0] iReadRow;
     wire [2:0] RGB_out_template;
     wire [2:0] RGB_out_moving_square;
-    wire red_square; 
+    wire red_square;
+	 wire bandera;
 
 
 	//MUX
@@ -53,7 +54,7 @@ module MiniAlu(
 		.RGB_out(RGB_out_template)
 	);
 	 
-	Teclado tec1(PS2_CLK,PS2_DATA, Reset,mIzq,mDer,mArriba,mAbajo);
+	Teclado tec1(PS2_CLK,PS2_DATA, Reset,mIzq,mDer,mArriba,mAbajo,bandera);
 	 
 // Se instancia el generador de senales
 
@@ -66,24 +67,35 @@ module MiniAlu(
 		.line_count(iReadRow)
 		);
 
-//Se instancia el bloque que lleva la cuenta de donde esta el cuadrado rojo
-//reg BTN_NORTH = 0;
-//reg BTN_SOUTH = 0; 
-//reg BTN_EAST = 0;
-//reg BTN_WEST = 0;
+//Se suprimen los rebotes
+wire up,down,left,right;
+DeBounce debouncing_up(Clock_25,Reset,BTN_NORTH,up);
+DeBounce debouncing_down(Clock_25,Reset,BTN_SOUTH,down);
+DeBounce debouncing_left(Clock_25,Reset,BTN_WEST,left);
+DeBounce debouncing_right(Clock_25,Reset,BTN_EAST,right);
 
+
+
+
+
+//Se instancia el bloque que lleva la cuenta de donde esta el cuadrado rojo
 moving_square moving_square (
 	.Reset (Reset),
 	.iReadCol(iReadCol),
 	.iReadRow(iReadRow),
+	.button_up(up),
+	.button_down(down),
+	.button_left(left),
+	.button_right(right),
 	/*.button_up(BTN_NORTH),
 	.button_down(BTN_SOUTH),
 	.button_left(BTN_WEST),
 	.button_right(BTN_EAST),*/
-	.button_up(mArriba),
+	/*.button_up(mArriba),
 	.button_down(mAbajo),
 	.button_left(mIzq),
 	.button_right(mDer),
+	.bandera(bandera),*/
 	.RGB_out(RGB_out_moving_square),
 	.show_square(red_square)
 	);
@@ -101,34 +113,40 @@ module moving_square (
 	input wire button_down,
 	input wire button_left,
 	input wire button_right,
+	//input wire bandera,
 	output wire [2:0] RGB_out,
 	output reg show_square
 );
 
 	integer square_width = `WIDTH_SIZE_RES/7;
 	integer square_height = `HEIGHT_SIZE_RES/7;
-	reg [2:0] squareX_position =3'b011;
-	reg [2:0] squareY_position =3'b100;
+	reg [2:0] squareX_position = 3'b011;
+	reg [2:0] squareY_position = 3'b011;
 	assign RGB_out = 3'b100;
 	
-	
-	always @ ( posedge button_up or posedge button_down or posedge Reset) begin
+		
+	always @ (posedge button_up or posedge button_down) begin
 		if (button_down)
 			squareY_position = squareY_position +1;
-		else if (Reset)
-			squareY_position =3'b100;
 		else
 			squareY_position = squareY_position -1;
 	end
 	
-	always @ (posedge button_left or posedge button_right or posedge Reset) begin
+	always @ (posedge button_left or posedge button_right) begin
+		if (button_right)
+			squareX_position = squareX_position +1;
+		else
+			squareX_position = squareX_position -1;
+	end
+	
+	/*always @ (posedge button_left or posedge button_right or posedge Reset) begin
 		if (button_right)
 			squareX_position = squareX_position +1;
 		else if (Reset)
 			squareX_position =3'b011;
 		else
 			squareX_position = squareX_position -1;
-	end
+	end*/
 	
 
 	
@@ -144,4 +162,76 @@ module moving_square (
 
 
 endmodule
+
+
+module  DeBounce 
+    (
+    input   clk, n_reset, button_in,        // inputs
+    output reg DB_out
+    );
+     
+    /*
+    Parameter N defines the debounce time. Assuming 50 KHz clock,
+    the debounce time is 2^(11-1)/ 50 KHz = 20 ms
+     
+    For 50 MHz clock increase value of N accordingly to 21.
+     
+    */
+    parameter N = 11 ;      
+ 
+    reg  [N-1 : 0]  delaycount_reg;                     
+    reg  [N-1 : 0]  delaycount_next;
+     
+    reg DFF1, DFF2;                                 
+    wire q_add;                                     
+    wire q_reset;
+ 
+        always @ ( posedge clk )
+        begin
+            if(n_reset ==  1'b0) // At reset initialize FF and counter 
+                begin
+                    DFF1 <= 1'b0;
+                    DFF2 <= 1'b0;
+                    delaycount_reg <= { N {1'b0} };
+                end
+            else
+                begin
+                    DFF1 <= button_in;
+                    DFF2 <= DFF1;
+                    delaycount_reg <= delaycount_next;
+                end
+        end
+     
+     
+    assign q_reset = (DFF1  ^ DFF2); // Ex OR button_in on conecutive clocks
+                                     // to detect level change 
+                                      
+    assign  q_add = ~(delaycount_reg[N-1]); // Check count using MSB of counter         
+     
+ 
+    always @ ( q_reset, q_add, delaycount_reg)
+        begin
+            case( {q_reset , q_add})
+                2'b00 :
+                        delaycount_next <= delaycount_reg;
+                2'b01 :
+                        delaycount_next <= delaycount_reg + 1;
+                default :
+                // In this case q_reset = 1 => change in level. Reset the counter 
+                        delaycount_next <= { N {1'b0} };
+            endcase    
+        end
+     
+     
+    always @ ( posedge clk )
+        begin
+            if(delaycount_reg[N-1] == 1'b1)
+                    DB_out <= DFF2;
+            else
+                    DB_out <= DB_out;
+        end
+         
+endmodule
+
+
 
