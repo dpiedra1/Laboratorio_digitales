@@ -21,8 +21,9 @@ module bar_ball (
 	output reg display_bar_or_ball
 	);
 	
-	//Posicion del centro de la barra en el eje x
-	reg signed [10:0] bar_xPosition;
+	//Posicion del centro de las barras en el eje x
+	reg signed [10:0] bar0_xPosition;
+	reg signed [10:0] bar1_xPosition;
 	
 	//Posicion del centro de la bola
 	reg signed [10:0] ball_xPosition;
@@ -35,45 +36,73 @@ module bar_ball (
 	reg [2:0] ball_direction;
 	
 	//Registro para definir cuando empezar el juego
-	reg game_running;
+	reg game_running = 1;
 	
 	//Registro para saber cuando se golpeo una barra o borde lateral
 	reg hit_bar_or_border;
 	
 	assign RGB_out = `bar_color;
 	
-	always @ (posedge button_up or posedge Reset) begin
-		if (Reset)
-			game_running <= 0;
-		else if (!game_running)
-			game_running <= !game_running;
-	end
-	
-	
-	always @ (posedge button_left or posedge button_right or posedge Reset) begin
-		if (button_right) begin
+	//barra 1, la de arriba
+	always @ (posedge button_up or posedge button_down or posedge Reset) begin
+		if (button_down) begin
 			
 			//caso en el que no esta cerca del borde   
-			if (bar_xPosition + `bar_pixel_change + `bar_width/2 < `WIDTH_SIZE_RES )begin 
-				bar_xPosition <= bar_xPosition + `bar_pixel_change;
+			if (bar1_xPosition + `bar_pixel_change + `bar_width/2 < `WIDTH_SIZE_RES )begin 
+				bar1_xPosition <= bar1_xPosition + `bar_pixel_change;
 			
 			//caso en el que si esta cerca del borde
 			end else begin
-				bar_xPosition <= `WIDTH_SIZE_RES - `bar_width/2;
+				bar1_xPosition <= `WIDTH_SIZE_RES - `bar_width/2;
 			end
 		
 		end else if (Reset) begin
-			bar_xPosition <= `WIDTH_SIZE_RES/2;
+			bar1_xPosition <= `WIDTH_SIZE_RES/2;
 		end else begin // se presiono el boton de la derecha
 			
 		
 		//caso en el que no esta cerca del borde   
-			if (bar_xPosition - `bar_pixel_change - `bar_width/2 > 0 )begin 
-				bar_xPosition <= bar_xPosition - `bar_pixel_change;
+			if (bar1_xPosition - `bar_pixel_change - `bar_width/2 > 0 )begin 
+				bar1_xPosition <= bar1_xPosition - `bar_pixel_change;
 			
 			//caso en el que si esta cerca del borde
 			end else begin
-				bar_xPosition <=`bar_width/2;
+				bar1_xPosition <=`bar_width/2;
+			end
+		
+		
+		
+		end
+		
+		
+		
+	end
+	
+	//barra 0, la de abajo
+	always @ (posedge button_left or posedge button_right or posedge Reset) begin
+		if (button_right) begin
+			
+			//caso en el que no esta cerca del borde   
+			if (bar0_xPosition + `bar_pixel_change + `bar_width/2 < `WIDTH_SIZE_RES )begin 
+				bar0_xPosition <= bar0_xPosition + `bar_pixel_change;
+			
+			//caso en el que si esta cerca del borde
+			end else begin
+				bar0_xPosition <= `WIDTH_SIZE_RES - `bar_width/2;
+			end
+		
+		end else if (Reset) begin
+			bar0_xPosition <= `WIDTH_SIZE_RES/2;
+		end else begin // se presiono el boton de la derecha
+			
+		
+		//caso en el que no esta cerca del borde   
+			if (bar0_xPosition - `bar_pixel_change - `bar_width/2 > 0 )begin 
+				bar0_xPosition <= bar0_xPosition - `bar_pixel_change;
+			
+			//caso en el que si esta cerca del borde
+			end else begin
+				bar0_xPosition <=`bar_width/2;
 			end
 		
 		
@@ -146,9 +175,12 @@ module bar_ball (
 					
 				end
 				
-				//Si pega en el borde de arriba
-				else if ((ball_yPosition-`ball_size/2 <= 0) && (!hit_bar_or_border)) begin
+				//Si pega la barra 1
+				else if (((ball_xPosition+`ball_size/2 <= bar1_xPosition + `bar_width/2 + `ball_size) && 
+							(ball_xPosition-`ball_size/2 >= bar1_xPosition - `bar_width/2 - `ball_size)) &&
+							 (ball_yPosition - `ball_size/2 == `bar_height) && (!hit_bar_or_border) ) begin
 					hit_bar_or_border <= 1;
+					
 					case (ball_direction)
 						3'b000:
 							ball_direction <= 3'b110;
@@ -170,9 +202,9 @@ module bar_ball (
 					endcase
 				
 				end
-				//Si pega en la barra
-				else if (((ball_xPosition+`ball_size/2 <= bar_xPosition + `bar_width/2 + `ball_size) && 
-							(ball_xPosition-`ball_size/2 >= bar_xPosition - `bar_width/2 - `ball_size)) &&
+				//Si pega en la barra 0
+				else if (((ball_xPosition+`ball_size/2 <= bar0_xPosition + `bar_width/2 + `ball_size) && 
+							(ball_xPosition-`ball_size/2 >= bar0_xPosition - `bar_width/2 - `ball_size)) &&
 							 (ball_yPosition + `ball_size/2 == `HEIGHT_SIZE_RES - `bar_height) && (!hit_bar_or_border) )  begin 
 					hit_bar_or_border <= 1;
 					
@@ -249,22 +281,16 @@ module bar_ball (
 	
 	
 	
-	//Mover la bola cada vez que el contador alcanza su valor maximo
-	/*always @ (*) begin
-		if (time_counter == `ball_time_change-1) begin
-			ball_xPosition = ball_xPosition + 5;
-			ball_yPosition = ball_yPosition + 5;
-		end
-	
-	end*/
-	
+		
 	
 	//Cuando mostrar la bola y la barra	
 	always @ (*) begin
-		if ( ((iReadRow <= `HEIGHT_SIZE_RES) && (iReadRow >= `HEIGHT_SIZE_RES - `bar_height) && 
-			 (iReadCol <= bar_xPosition + `bar_width/2) && (iReadCol >= bar_xPosition - `bar_width/2) ) || (
+		if ( ((iReadRow <= `HEIGHT_SIZE_RES) && (iReadRow > `HEIGHT_SIZE_RES - `bar_height) && 
+			 (iReadCol <= bar0_xPosition + `bar_width/2) && (iReadCol >= bar0_xPosition - `bar_width/2) ) || (
 			 (iReadRow <= ball_yPosition + `ball_size/2) && (iReadRow >= ball_yPosition - `ball_size/2) &&
-			 (iReadCol <= ball_xPosition + `ball_size/2 ) && (iReadCol >= ball_xPosition - `ball_size/2 ) )	)
+			 (iReadCol <= ball_xPosition + `ball_size/2 ) && (iReadCol >= ball_xPosition - `ball_size/2 ) )	|| 
+			 ((iReadRow <= `bar_height) && 
+			 (iReadCol <= bar1_xPosition + `bar_width/2) && (iReadCol >= bar1_xPosition - `bar_width/2) ) )
 			display_bar_or_ball = 1;
 		else
 			display_bar_or_ball = 0;
