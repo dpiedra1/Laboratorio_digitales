@@ -2,7 +2,7 @@
 `define bar_width 120
 `define bar_height 10
 `define bar_color 3'b111  //blanca
-`define bar_pixel_change 10 //numero de pixels que se desplaza la barra por cada vez que se presiona un boton
+`define bar_pixel_change 20 //numero de pixels que se desplaza la barra por cada vez que se presiona un boton
 
 `define ball_size 20  //Se ve como un cuadrado
 `define ball_color 3'b100
@@ -31,7 +31,7 @@ module bar_ball (
 	reg [31:0]time_counter;
 	
 	//Registro para almacenar la direccion en la que deberia ir la bola
-	reg [2:0] ball_direction;
+	reg [3:0] ball_direction;
 	
 	//Registro para definir cuando empezar el juego
 	reg game_running = 1;
@@ -151,10 +151,10 @@ module bar_ball (
 			bar1_xPosition = `WIDTH_SIZE_RES/2;
 		end
 		else begin 
-			if ( mAccion[2] ) begin
+			if ( mAccion[1] ) begin
 				bar1_xPosition = bar1_xPosition - `bar_pixel_change;
 			end
-			else if ( mAccion[1] ) begin
+			else if ( mAccion[2] ) begin
 				bar1_xPosition = bar1_xPosition + `bar_pixel_change;
 			end
 		end
@@ -252,25 +252,83 @@ module bar_ball (
 							 (ball_yPosition - `ball_size/2 == `bar_height) && (!hit_bar_or_border) ) begin
 					hit_bar_or_border <= 1;
 					
-					case (ball_direction)
-						3'b000:
-							ball_direction <= 3'b110;
-						3'b001:
-							ball_direction <= 3'b111;
-						3'b010:
-							ball_direction <= 3'b100;
-						3'b011:
-							ball_direction <= 3'b101;
-						3'b100:
-							ball_direction <= 3'b010;
-						3'b101:
-							ball_direction <= 3'b011;
-						3'b110:
-							ball_direction <= 3'b000;
-						3'b111:
-							ball_direction <= 3'b001;
-							
-					endcase
+				//derecha
+					if(ball_xPosition > (bar1_xPosition + `bar_width/6)) begin
+						case (ball_direction)
+							4'b0000:
+								ball_direction <= 4'b0110;
+							4'b0001:
+								ball_direction <= 4'b0110;
+							4'b0010:
+								ball_direction <= 4'b0100;
+							4'b0011:
+								ball_direction <= 4'b0100;
+							4'b0100:
+								ball_direction <= 4'b0010;
+							4'b0101:
+								ball_direction <= 4'b0010;
+							4'b0110:
+								ball_direction <= 4'b0000;
+							4'b0111:
+								ball_direction <= 4'b0000;
+							4'b1111:
+								ball_direction <= 4'b0010;
+							4'b1000:
+								ball_direction <= 4'b0010;
+						endcase
+					
+					//izquierda
+					end else if (ball_xPosition < (bar1_xPosition - `bar_width/6) ) begin
+						case (ball_direction)
+							4'b0000:
+								ball_direction <= 4'b0111;
+							4'b0001:
+								ball_direction <= 4'b0111;
+							4'b0010:
+								ball_direction <= 4'b0101;
+							4'b0011:
+								ball_direction <= 4'b0101;
+							4'b0100:
+								ball_direction <= 4'b0011;
+							4'b0101:
+								ball_direction <= 4'b0011;
+							4'b0110:
+								ball_direction <= 4'b0001;
+							4'b0111:
+								ball_direction <= 4'b0001;
+							4'b1111:
+								ball_direction <= 4'b0011;
+							4'b1000:
+								ball_direction <= 4'b0011;
+						endcase
+					
+					end
+					//centro
+					else begin
+						case (ball_direction)
+							4'b0000:
+								ball_direction <= 4'b1000;
+							4'b0001:
+								ball_direction <= 4'b1000;
+							4'b0010:
+								ball_direction <= 4'b1000;
+							4'b0011:
+								ball_direction <= 4'b1000;
+							4'b0100:
+								ball_direction <= 4'b1000;
+							4'b0101:
+								ball_direction <= 4'b1000;
+							4'b0110:
+								ball_direction <= 4'b1000;
+							4'b0111:
+								ball_direction <= 4'b1000;
+							4'b1111:
+								ball_direction <= 4'b1000;
+							4'b1000:
+								ball_direction <= 4'b1000;
+						endcase
+					
+					end
 				
 				end
 				//Si pega en la barra 0
@@ -278,26 +336,85 @@ module bar_ball (
 							(ball_xPosition-`ball_size/2 >= bar0_xPosition - `bar_width/2 - `ball_size)) &&
 							 (ball_yPosition + `ball_size/2 == `HEIGHT_SIZE_RES - `bar_height) && (!hit_bar_or_border) )  begin 
 					hit_bar_or_border <= 1;
+					//derecha
+					if(ball_xPosition > (bar0_xPosition + `bar_width/6)) begin
+						case (ball_direction)
+							4'b0000:
+								ball_direction <= 4'b0110;
+							4'b0001:
+								ball_direction <= 4'b0110;
+							4'b0010:
+								ball_direction <= 4'b0100;
+							4'b0011:
+								ball_direction <= 4'b0100;
+							4'b0100:
+								ball_direction <= 4'b0010;
+							4'b0101:
+								ball_direction <= 4'b0011;
+							4'b0110:
+								ball_direction <= 4'b0000;
+							4'b0111:
+								ball_direction <= 4'b0001;
+							4'b1111:
+								ball_direction <= 4'b0110;
+							4'b1000:
+								ball_direction <= 4'b0110;
+						endcase
+					//izquierda
+					end else if (ball_xPosition < (bar0_xPosition - `bar_width/6) ) begin
+						case (ball_direction)
+							4'b0000:
+								ball_direction <= 4'b0111;
+							4'b0001:
+								ball_direction <= 4'b0111;
+							4'b0010:
+								ball_direction <= 4'b0101;
+							4'b0011:
+								ball_direction <= 4'b0101;
+							4'b0100:
+								ball_direction <= 4'b0010;
+							4'b0101:
+								ball_direction <= 4'b0011;
+							4'b0110:
+								ball_direction <= 4'b0000;
+							4'b0111:
+								ball_direction <= 4'b0001;
+							4'b1111:
+								ball_direction <= 4'b0111;
+							4'b1000:
+								ball_direction <= 4'b0111;
+								
+						endcase
 					
-					case (ball_direction)
-						3'b000:
-							ball_direction <= 3'b110;
-						3'b001:
-							ball_direction <= 3'b111;
-						3'b010:
-							ball_direction <= 3'b100;
-						3'b011:
-							ball_direction <= 3'b101;
-						3'b100:
-							ball_direction <= 3'b010;
-						3'b101:
-							ball_direction <= 3'b011;
-						3'b110:
-							ball_direction <= 3'b000;
-						3'b111:
-							ball_direction <= 3'b001;
-							
-					endcase
+					end
+					//caso del centro
+					else begin
+						case (ball_direction)
+							4'b0000:
+								ball_direction <= 4'b1111;
+							4'b0001:
+								ball_direction <= 4'b1111;
+							4'b0010:
+								ball_direction <= 4'b1111;
+							4'b0011:
+								ball_direction <= 4'b1111;
+							4'b0100:
+								ball_direction <= 4'b1111;
+							4'b0101:
+								ball_direction <= 4'b1111;
+							4'b0110:
+								ball_direction <= 4'b1111;
+							4'b0111:
+								ball_direction <= 4'b1111;
+							4'b1111:
+								ball_direction <= 4'b1111;
+							4'b1000:
+								ball_direction <= 4'b1111;
+						endcase
+					
+					end
+					
+					
 										
 				end
 				
@@ -306,38 +423,45 @@ module bar_ball (
 				else begin
 					hit_bar_or_border <= 0;
 					case (ball_direction)
-						3'b000: begin
+						4'b000: begin
 							ball_xPosition <= ball_xPosition +2; //cambio aqui antes era un 2
 							ball_yPosition <= ball_yPosition +1; 
 						end
-						3'b001: begin
+						4'b001: begin
 							ball_xPosition <= ball_xPosition -2; //antes 2
 							ball_yPosition <= ball_yPosition +1; 
 						end
-						3'b010: begin
+						4'b010: begin
 							ball_xPosition <= ball_xPosition +1;
 							ball_yPosition <= ball_yPosition +1;
 						end
-						3'b011: begin
+						4'b011: begin
 							ball_xPosition <= ball_xPosition -1;
 							ball_yPosition <= ball_yPosition +1; 
 						end
-						3'b100: begin
+						4'b100: begin
 							ball_xPosition <= ball_xPosition +2; //antes 2
 							ball_yPosition <= ball_yPosition -1;
 						end
-						3'b101: begin
+						4'b101: begin
 							ball_xPosition <= ball_xPosition -2; //antes 2
 							ball_yPosition <= ball_yPosition -1; 
 						end
-						3'b110: begin
+						4'b110: begin
 							ball_xPosition <= ball_xPosition +1;
 							ball_yPosition <= ball_yPosition -1; 
 						end
-						3'b111: begin
+						4'b111: begin
 							ball_xPosition <= ball_xPosition -1;
 							ball_yPosition <= ball_yPosition -1; 
-						end	
+						end
+						4'b1111: begin
+							ball_yPosition <= ball_yPosition -1; 
+						end
+						4'b1000:begin
+							ball_yPosition <= ball_yPosition +1; 
+						end
+						
 					endcase
 				
 				
