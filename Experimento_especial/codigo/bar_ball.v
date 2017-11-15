@@ -13,10 +13,8 @@ module bar_ball (
 	input wire [9:0]  iReadRow,
 	input wire Clock, 			//clock de 25MHz
 	input wire Reset,
-	input wire button_up,
-	input wire button_down,
-	input wire button_left,
-	input wire button_right,
+	input wire [4:0] mAccion,
+	input wire bandera,
 	output wire [2:0]  RGB_out,
 	output reg display_bar_or_ball
 	);
@@ -43,45 +41,14 @@ module bar_ball (
 	
 	assign RGB_out = `bar_color;
 	
-	//barra 1, la de arriba
-	always @ (posedge button_up or posedge button_down or posedge Reset) begin
-		if (button_down) begin
-			
-			//caso en el que no esta cerca del borde   
-			if (bar1_xPosition + `bar_pixel_change + `bar_width/2 < `WIDTH_SIZE_RES )begin 
-				bar1_xPosition <= bar1_xPosition + `bar_pixel_change;
-			
-			//caso en el que si esta cerca del borde
-			end else begin
-				bar1_xPosition <= `WIDTH_SIZE_RES - `bar_width/2;
-			end
-		
-		end else if (Reset) begin
-			bar1_xPosition <= `WIDTH_SIZE_RES/2;
-		end else begin // se presiono el boton de la derecha
-			
-		
-		//caso en el que no esta cerca del borde   
-			if (bar1_xPosition - `bar_pixel_change - `bar_width/2 > 0 )begin 
-				bar1_xPosition <= bar1_xPosition - `bar_pixel_change;
-			
-			//caso en el que si esta cerca del borde
-			end else begin
-				bar1_xPosition <=`bar_width/2;
-			end
-		
-		
-		
-		end
-		
-		
-		
-	end
 	
-	//barra 0, la de abajo
-	always @ (posedge button_left or posedge button_right or posedge Reset) begin
-		if (button_right) begin
-			
+	//barra 1, la de arriba
+	/*always @ (posedge bandera or posedge Reset) begin
+		if (Reset) begin
+			bar1_xPosition <= `WIDTH_SIZE_RES/2;
+			bar0_xPosition <= `WIDTH_SIZE_RES/2;
+		end
+		else if (button_right) begin
 			//caso en el que no esta cerca del borde   
 			if (bar0_xPosition + `bar_pixel_change + `bar_width/2 < `WIDTH_SIZE_RES )begin 
 				bar0_xPosition <= bar0_xPosition + `bar_pixel_change;
@@ -91,25 +58,129 @@ module bar_ball (
 				bar0_xPosition <= `WIDTH_SIZE_RES - `bar_width/2;
 			end
 		
-		end else if (Reset) begin
-			bar0_xPosition <= `WIDTH_SIZE_RES/2;
-		end else begin // se presiono el boton de la derecha
+		end else if (button_left) begin // se presiono el boton de la derecha
 			
 		
 		//caso en el que no esta cerca del borde   
 			if (bar0_xPosition - `bar_pixel_change - `bar_width/2 > 0 )begin 
 				bar0_xPosition <= bar0_xPosition - `bar_pixel_change;
-			
 			//caso en el que si esta cerca del borde
 			end else begin
 				bar0_xPosition <=`bar_width/2;
 			end
-		
-		
-		
 		end
-	
+		else if (button_down) begin
+			
+			//caso en el que no esta cerca del borde   
+			if (bar1_xPosition + `bar_pixel_change + `bar_width/2 < `WIDTH_SIZE_RES )begin 
+				bar1_xPosition <= bar1_xPosition + `bar_pixel_change;
+			
+			//caso en el que si esta cerca del borde
+			end else begin
+				bar1_xPosition <= `WIDTH_SIZE_RES - `bar_width/2;
+			end
+		end else if (button_up) begin // se presiono el boton de la derecha
+		//caso en el que no esta cerca del borde   
+			if (bar1_xPosition - `bar_pixel_change - `bar_width/2 > 0 )begin 
+				bar1_xPosition <= bar1_xPosition - `bar_pixel_change;
+			
+			//caso en el que si esta cerca del borde
+			end else begin
+				bar1_xPosition <=`bar_width/2;
+			end
+		
+			
+		end
+		
+		
 	end
+	*/
+	
+	/*always @(posedge bandera or posedge Reset) begin
+		if(Reset) begin
+			bar0_xPosition<=`WIDTH_SIZE_RES/2;
+			bar1_xPosition<=`WIDTH_SIZE_RES/2;
+	
+		end else begin
+			case (mAccion)
+				5'b10: begin
+					if (bar0_xPosition - `bar_pixel_change - `bar_width/2 > 0)begin 
+						bar0_xPosition <= bar0_xPosition - `bar_pixel_change;
+					//caso en el que si esta cerca del borde
+					end else begin
+						bar0_xPosition <=`bar_width/2;
+					end
+				end
+				
+				5'b100: begin
+					if (bar0_xPosition + `bar_pixel_change + `bar_width/2 < `WIDTH_SIZE_RES )begin 
+						bar0_xPosition <= bar0_xPosition + `bar_pixel_change;
+					//caso en el que si esta cerca del borde
+					end else begin
+						bar0_xPosition <= `WIDTH_SIZE_RES - `bar_width/2;
+					end
+				end
+				
+				5'b1000: begin
+					if (bar1_xPosition - `bar_pixel_change - `bar_width/2 > 0 )begin 
+						bar1_xPosition <= bar1_xPosition - `bar_pixel_change;	
+					//caso en el que si esta cerca del borde
+					end else begin
+						bar1_xPosition <=`bar_width/2;
+					end
+				end
+				
+				5'b10000: begin
+					//caso en el que no esta cerca del borde   
+				if (bar1_xPosition + `bar_pixel_change + `bar_width/2 < `WIDTH_SIZE_RES )begin 
+					bar1_xPosition <= bar1_xPosition + `bar_pixel_change;
+				
+				//caso en el que si esta cerca del borde
+				end else begin
+					bar1_xPosition <= `WIDTH_SIZE_RES - `bar_width/2;
+				end
+				end
+			endcase
+		end
+	end*/
+	
+	
+	//barra 1
+	always @ (posedge bandera or posedge Reset) begin
+		if(Reset) begin
+			bar1_xPosition = `WIDTH_SIZE_RES/2;
+		end
+		else begin 
+			if ( mAccion[2] ) begin
+				bar1_xPosition = bar1_xPosition - `bar_pixel_change;
+			end
+			else if ( mAccion[1] ) begin
+				bar1_xPosition = bar1_xPosition + `bar_pixel_change;
+			end
+		end
+			
+		
+	end
+	
+	
+	//barra 0
+	always @ (posedge bandera or posedge Reset) begin
+		if(Reset) begin
+			bar0_xPosition = `WIDTH_SIZE_RES/2;
+		end
+		else begin 
+			if ( mAccion[4]) begin
+				bar0_xPosition = bar0_xPosition - `bar_pixel_change;
+			end
+			else if ( mAccion[3] ) begin
+				bar0_xPosition = bar0_xPosition + `bar_pixel_change;
+			end
+		end
+			
+		
+	end
+	
+	
 	
 	
 	always @ (posedge Clock or posedge Reset) begin
