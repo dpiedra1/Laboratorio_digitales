@@ -9,7 +9,7 @@
 `define ball_time_change 125000 //cada cuantos ciclos la bola deberia cambiar (5ms)
 
 module bar_ball (
-	input wire [10:0] iReadCol,
+	input wire signed [10:0] iReadCol,
 	input wire [9:0]  iReadRow,
 	input wire Clock, 			//clock de 25MHz
 	input wire Reset,

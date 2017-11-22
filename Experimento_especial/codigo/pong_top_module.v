@@ -32,7 +32,7 @@ module Pong(
     
     
     
-    wire [10:0] iReadCol;
+    wire signed [10:0] iReadCol;
     wire [9:0] iReadRow;
     wire [2:0] RGB_out_template;
     wire [2:0] RGB_out_bar_ball;

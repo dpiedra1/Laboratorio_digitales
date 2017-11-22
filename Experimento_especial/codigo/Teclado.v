@@ -33,7 +33,7 @@ always @(*) begin
 				bandera=1;
 				mAccion=5'b00001;
 			end
-			8'h21: begin		//c
+			8'h2A: begin		//v
 				bandera=1;
 				mAccion=5'b00010;
 			end

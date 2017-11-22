@@ -6,7 +6,7 @@ module VH_GENERATOR(
 	input Reset,
 	output reg h_synch,
 	output reg v_synch,
-	output reg [10:0] pixel_count,  
+	output reg signed [10:0] pixel_count,  
 	output reg [9:0] line_count
 	);
 
