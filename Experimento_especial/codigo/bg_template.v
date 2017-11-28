@@ -38,13 +38,27 @@ module bg_template(
 			end
 			
 			2'b1: begin //Se dibuja un 1
-				if(iReadCol-`score0_posX>=15 && iReadCol-`score0_posX<19) begin
+				if(iReadCol-`score0_posX>=15 && iReadCol-`score0_posX<19 && (iReadRow-`score0_posY>=0 && iReadRow-`score0_posY<39)) begin
 					score0=1;
+				end
+				else begin
+					score0=0;
 				end
 			end
 			2'b10: begin //Se dibuja un 2
-				if(((iReadCol-`score0_posX>=0 && iReadCol-`score0_posX<19)&&(iReadRow-`score0_posY>=0 && iReadRow-`score0_posY<4))||((iReadCol-`score0_posX>=15 && iReadCol-`score0_posX<19)&&(iReadRow-`score0_posY>=5 && iReadRow-`score0_posY<17))||((iReadCol-`score0_posX>=0 && iReadCol-`score0_posX<19)&&(iReadRow-`score0_posY>=18 && iReadRow-`score0_posY<27))||((iReadCol-`score0_posX>=0 && iReadCol-`score0_posX<4)&&(iReadRow-`score0_posY>=23 && iReadRow-`score0_posY<34))||((iReadCol-`score0_posX>=0 && iReadCol-`score0_posX<19)&&(iReadRow-`score0_posY>=35 && iReadRow-`score0_posY<39))) begin
+				if(((iReadCol-`score0_posX>=0 && iReadCol-`score0_posX<19)&&(iReadRow-`score0_posY>=0 && iReadRow-`score0_posY<4))||((iReadCol-`score0_posX>=15 && iReadCol-`score0_posX<19)&&(iReadRow-`score0_posY>=5 && iReadRow-`score0_posY<17))||((iReadCol-`score0_posX>=0 && iReadCol-`score0_posX<19)&&(iReadRow-`score0_posY>=18 && iReadRow-`score0_posY<22))||((iReadCol-`score0_posX>=0 && iReadCol-`score0_posX<4)&&(iReadRow-`score0_posY>=23 && iReadRow-`score0_posY<34))||((iReadCol-`score0_posX>=0 && iReadCol-`score0_posX<19)&&(iReadRow-`score0_posY>=35 && iReadRow-`score0_posY<39))) begin
 					score0=1;
+				end
+				else begin
+					score0=0;
+				end
+			end
+			2'b11: begin //Se dibuja un 2
+				if(((iReadCol-`score0_posX>=0 && iReadCol-`score0_posX<19)&&(iReadRow-`score0_posY>=0 && iReadRow-`score0_posY<4))||((iReadCol-`score0_posX>=15 && iReadCol-`score0_posX<19)&&(iReadRow-`score0_posY>=5 && iReadRow-`score0_posY<17))||((iReadCol-`score0_posX>=0 && iReadCol-`score0_posX<19)&&(iReadRow-`score0_posY>=18 && iReadRow-`score0_posY<22))||((iReadCol-`score0_posX>=15 && iReadCol-`score0_posX<19)&&(iReadRow-`score0_posY>=23 && iReadRow-`score0_posY<34))||((iReadCol-`score0_posX>=0 && iReadCol-`score0_posX<19)&&(iReadRow-`score0_posY>=35 && iReadRow-`score0_posY<39))) begin
+					score0=1;
+				end
+				else begin
+					score0=0;
 				end
 			end
 			default:
@@ -64,13 +78,26 @@ module bg_template(
 			end
 			
 			2'b1: begin //Se dibuja 1
-				if(iReadCol-`score1_posX>=15 && iReadCol-`score1_posX<19) begin
+				if(iReadCol-`score1_posX>=15 && iReadCol-`score1_posX<19 && (iReadRow-`score1_posY>=0 && iReadRow-`score1_posY<39)) begin
 					score1=1;
+				end
+				else begin
+					score1=0;
 				end
 			end
 			2'b10: begin //Se dibuja un 2
-				if(((iReadCol-`score1_posX>=0 && iReadCol-`score1_posX<19)&&(iReadRow-`score1_posY>=0 && iReadRow-`score1_posY<4))||((iReadCol-`score1_posX>=15 && iReadCol-`score1_posX<19)&&(iReadRow-`score1_posY>=5 && iReadRow-`score1_posY<17))||((iReadCol-`score1_posX>=0 && iReadCol-`score1_posX<19)&&(iReadRow-`score1_posY>=18 && iReadRow-`score1_posY<27))||((iReadCol-`score1_posX>=0 && iReadCol-`score1_posX<4)&&(iReadRow-`score1_posY>=23 && iReadRow-`score1_posY<34))||((iReadCol-`score1_posX>=0 && iReadCol-`score1_posX<19)&&(iReadRow-`score1_posY>=35 && iReadRow-`score1_posY<39))) begin
-					score0=1;
+				if(((iReadCol-`score1_posX>=0 && iReadCol-`score1_posX<19)&&(iReadRow-`score1_posY>=0 && iReadRow-`score1_posY<4))||((iReadCol-`score1_posX>=15 && iReadCol-`score1_posX<19)&&(iReadRow-`score1_posY>=5 && iReadRow-`score1_posY<17))||((iReadCol-`score1_posX>=0 && iReadCol-`score1_posX<19)&&(iReadRow-`score1_posY>=18 && iReadRow-`score1_posY<22))||((iReadCol-`score1_posX>=0 && iReadCol-`score1_posX<4)&&(iReadRow-`score1_posY>=23 && iReadRow-`score1_posY<34))||((iReadCol-`score1_posX>=0 && iReadCol-`score1_posX<19)&&(iReadRow-`score1_posY>=35 && iReadRow-`score1_posY<39))) begin					
+					score1=1;
+				end
+				else begin
+					score1=0;
+				end
+			end
+					2'b11: begin //Se dibuja un 2
+if(((iReadCol-`score1_posX>=0 && iReadCol-`score1_posX<19)&&(iReadRow-`score1_posY>=0 && iReadRow-`score1_posY<4))||((iReadCol-`score1_posX>=15 && iReadCol-`score1_posX<19)&&(iReadRow-`score1_posY>=5 && iReadRow-`score1_posY<17))||((iReadCol-`score1_posX>=0 && iReadCol-`score1_posX<19)&&(iReadRow-`score1_posY>=18 && iReadRow-`score1_posY<22))||((iReadCol-`score1_posX>=15 && iReadCol-`score1_posX<19)&&(iReadRow-`score1_posY>=23 && iReadRow-`score1_posY<34))||((iReadCol-`score1_posX>=0 && iReadCol-`score1_posX<19)&&(iReadRow-`score1_posY>=35 && iReadRow-`score1_posY<39))) begin					score1=1;
+				end
+				else begin
+					score1=0;
 				end
 			end
 			default: begin

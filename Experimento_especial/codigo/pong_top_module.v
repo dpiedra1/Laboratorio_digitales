@@ -41,8 +41,8 @@ module Pong(
 	wire [1:0] bar0_score;
 	wire [1:0] bar1_score;
 	
-	assign bar0_score = 2'b10;
-	assign bar1_score = 2'b10;
+	//assign bar0_score = 2'b11;
+	//assign bar1_score = 2'b11;
     
     //Se instancia el color de fondo
 	 
@@ -76,8 +76,8 @@ module Pong(
 	.mAccion(mAccion),
 	.bandera(bandera),
 	.RGB_out(RGB_out_bar_ball),
-	//.bar0_score(bar0_score),
-	//.bar1_score(bar1_score),
+	.bar0_score(bar0_score),
+	.bar1_score(bar1_score),
 	.display_bar_or_ball(display_bar_or_ball)
 	);
     

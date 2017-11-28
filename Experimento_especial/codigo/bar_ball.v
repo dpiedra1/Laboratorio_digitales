@@ -323,13 +323,19 @@ module bar_ball (
 				end
 				
 				//Si se anota un punto para la barra de abajo
-				else if (ball_yPosition == `bar_height ) begin
+				else if ((ball_yPosition == `bar_height) && (!hit_bar_or_border)) begin
 					bar0_score <= bar0_score +1;
+					hit_bar_or_border <= 1;
+					ball_xPosition <= `WIDTH_SIZE_RES/2;
+					ball_yPosition <= `HEIGHT_SIZE_RES/2;
 				end
 				
 				//Si se anota un punto para la barra de arriba
-				else if (ball_yPosition == `HEIGHT_SIZE_RES- `bar_height) begin
+				else if ((ball_yPosition == `HEIGHT_SIZE_RES- `bar_height) && (!hit_bar_or_border)) begin
 					bar1_score <= bar1_score +1;
+					hit_bar_or_border <= 1;
+					ball_xPosition <= `WIDTH_SIZE_RES/2;
+					ball_yPosition <= `HEIGHT_SIZE_RES/2;
 				end
 								
 				
