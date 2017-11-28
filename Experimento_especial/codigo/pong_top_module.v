@@ -37,12 +37,21 @@ module Pong(
     wire [2:0] RGB_out_template;
     wire [2:0] RGB_out_bar_ball;
     wire display_bar_or_ball;
+	 
+	wire [1:0] bar0_score;
+	wire [1:0] bar1_score;
+	
+	assign bar0_score = 2'b10;
+	assign bar1_score = 2'b10;
     
-    //Se instancia el color de fondo 
+    //Se instancia el color de fondo
+	 
 	bg_template bg_template (
 		.iReadCol(iReadCol),
 		.iReadRow(iReadRow),
-		.RGB_out(RGB_out_template)
+		.RGB_out(RGB_out_template),
+		.bar0_score(bar0_score),
+		.bar1_score(bar1_score)
 	);
 	 
 	 
@@ -67,6 +76,8 @@ module Pong(
 	.mAccion(mAccion),
 	.bandera(bandera),
 	.RGB_out(RGB_out_bar_ball),
+	//.bar0_score(bar0_score),
+	//.bar1_score(bar1_score),
 	.display_bar_or_ball(display_bar_or_ball)
 	);
     
@@ -78,8 +89,9 @@ module Pong(
 	 
    //MUX
    assign VGA_RED = (display_bar_or_ball) ? RGB_out_bar_ball[2]:RGB_out_template[2];
-   assign VGA_BLUE = (display_bar_or_ball)? RGB_out_bar_ball[1]:RGB_out_template[1];
-   assign VGA_GREEN =(display_bar_or_ball)? RGB_out_bar_ball[0]:RGB_out_template[0]; 
+	assign VGA_GREEN =(display_bar_or_ball)? RGB_out_bar_ball[1]:RGB_out_template[1];
+   assign VGA_BLUE = (display_bar_or_ball)? RGB_out_bar_ball[0]:RGB_out_template[0];
+    
 	
 	
 endmodule
